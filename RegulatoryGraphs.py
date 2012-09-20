@@ -220,7 +220,7 @@ def Boolean4():
                     ('v3', 'v0', (1,))]
     return Model(Names, Interactions)
 
-def Shahrad():
+def ABC():
     Names = [('A',1),('B',1),('C',2)]
     Interactions = [('A','C',(1,)),
                     ('B','C',(1,)),

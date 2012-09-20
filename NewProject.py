@@ -15,8 +15,8 @@ reload(DATABASE)
 
 
 def run():
-    PROJECT_NAME = 'Boolean4'
-    MODEL = RegulatoryGraphs.Boolean4()
+    PROJECT_NAME = 'ABC'
+    MODEL = RegulatoryGraphs.ABC()
     CONSTRAINT = 'Multiplex(A=1 and B=1, C=1 [C]) and (NotObservable(C,A,1) or ActivatingOnly(C,A,1)) and Activating(C,B,1) and NotInhibiting(C,B,2)'+\
                  'and Some(A>0 [C] = 0)'
     RegulatoryGraphs.PrintFullInfo(MODEL)
