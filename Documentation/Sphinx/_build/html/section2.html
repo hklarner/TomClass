@@ -1,0 +1,706 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Section 2: Classifying &mdash; Enumerator Tool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Enumerator Tool 1.0 documentation" href="index.html" />
+    <link rel="next" title="3. Section 3: Analysis" href="section3.html" />
+    <link rel="prev" title="1. Section 1: Initial Parametrizations" href="section1.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="section3.html" title="3. Section 3: Analysis"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="section1.html" title="1. Section 1: Initial Parametrizations"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="section-2-classifying">
+<h1>2. Section 2: Classifying<a class="headerlink" href="#section-2-classifying" title="Permalink to this headline">¶</a></h1>
+<p>Classifying is the process of specifying an algorithm, called <em>classifier</em>, that computes a value, called <em>class label</em>, for a given parametrization. The labels are added to the existing database in a column with a user-defined title, called <em>property name</em>. The central part of classifying is a loop over a user-defined selection of parametrizations. In each iteration the current parametrization is passed to the classifier. The class label it returns is stored and the next parametrization is handed to the classifier.</p>
+<blockquote>
+<div><em>Example</em>: Suppose that the parametrizations of a project have previously been classified by the number of fixpoints in their asynchronous transition graphs. The project database therefore contains a column entitled <tt class="docutils literal"><span class="pre">Fixpoints</span></tt> with integer values. In a second step, all parametrizations with exactly one fixpoint shall be divided into the class that reproduces a time series called <tt class="docutils literal"><span class="pre">TS1</span></tt>, and the class that does not. The specification for time series <tt class="docutils literal"><span class="pre">TS1</span></tt> together with the selection <tt class="docutils literal"><span class="pre">Fixpoints=1</span></tt> is passed to the <em>time series classifier</em>, which computes Boolean labels for the porperty <tt class="docutils literal"><span class="pre">TS1</span></tt> in the <em>classification loop</em> over all parametrizations in the selection.</div></blockquote>
+<a class="reference internal image-reference" href="_images/section2_01.jpg"><img alt="_images/section2_01.jpg" class="align-center" src="_images/section2_01.jpg" style="width: 736.4px; height: 418.6px;" /></a>
+<p>To continue work on an existing project, i.e., to classify a selection of models by a given property specification, the script <tt class="docutils literal"><span class="pre">continue_project.py</span></tt> is called. The script requires the <em>project-name</em> of the project to be continued, the <em>classifier</em> that is to be used, a <em>selection</em> of parametrizations that is to be classified and possibly a <em>limit</em> that sets the maximum number of calls of the classifier. These four inputs are specified by editing the header of the file <tt class="docutils literal"><span class="pre">continue_project.py</span></tt>:</p>
+<blockquote>
+<div><p><strong>continue_project.py</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">project_name</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">classifier</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">selection</span> <span class="o">=</span> <span class="s">&quot;all&quot;</span>
+<span class="n">limit</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The script first confirms, that a project <tt class="docutils literal"><span class="pre">Projects/&lt;project_name&gt;</span></tt> exists and that it contains a model database <tt class="docutils literal"><span class="pre">&lt;project_name&gt;.db</span></tt>.</p>
+<p><em>Input 1: classifier</em>: The variable <tt class="docutils literal"><span class="pre">classifier</span></tt> must either be assigned to the name of a <em>property file</em>, or the name of a <em>custom classifier</em>. A property file is a text file that contains a property description for one of the three classifiers that are delivered with the tool: <a class="reference internal" href="#section2-type1"><em>model checking</em></a>, <a class="reference internal" href="#section2-type2"><em>trap set search</em></a>, <a class="reference internal" href="#section2-type3"><em>time series existence</em></a>. A custom classifier is a Python script that computes class labels for models. Its property description is hard-wired into it by the author of the script. A detailed description of the interface between <tt class="docutils literal"><span class="pre">continue_project.py</span></tt> and custom classifiers is given in <a class="reference internal" href="#section2-custom-classifier"><em>Section: Custom Classifier</em></a>.</p>
+<p><em>Input 2: selection</em>: The variable <tt class="docutils literal"><span class="pre">selection</span></tt> defines which parametrizations ought to be classified in this run. It is a Boolean expression over the <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>predicates</em></a> of <a class="reference internal" href="appendixB.html"><em>Appendix B: Parameter Constraint Language</em></a>, but also includes SQL statements over class labels already attached to the parametrizations:</p>
+<blockquote>
+<div><p><strong>Selections</strong></p>
+<pre>
+<strong id="grammar-token-selection">selection     </strong> ::=  <a class="reference internal" href="#grammar-token-selection_atom"><tt class="xref docutils literal"><span class="pre">selection_atom</span></tt></a> | 'not' <a class="reference internal" href="#grammar-token-selection"><tt class="xref docutils literal"><span class="pre">selection</span></tt></a> | <a class="reference internal" href="#grammar-token-selection"><tt class="xref docutils literal"><span class="pre">selection</span></tt></a> 'and' <a class="reference internal" href="#grammar-token-selection"><tt class="xref docutils literal"><span class="pre">selection</span></tt></a> | <a class="reference internal" href="#grammar-token-selection"><tt class="xref docutils literal"><span class="pre">selection</span></tt></a> 'or' <a class="reference internal" href="#grammar-token-selection"><tt class="xref docutils literal"><span class="pre">selection</span></tt></a>
+<strong id="grammar-token-selection_atom">selection_atom</strong> ::=  <a class="reference internal" href="section1.html#grammar-token-constraint"><tt class="xref docutils literal"><span class="pre">constraint</span></tt></a> | <a class="reference internal" href="#grammar-token-property"><tt class="xref docutils literal"><span class="pre">property</span></tt></a>
+<strong id="grammar-token-property">property      </strong> ::=  hmm
+</pre>
+</div></blockquote>
+<p>If the value of <tt class="docutils literal"><span class="pre">selection</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt>, then <em>all</em> parametrizations without a label will be classified.</p>
+<p><em>Input 3: limit</em>: The variable <tt class="docutils literal"><span class="pre">limit</span></tt> is either set to <tt class="docutils literal"><span class="pre">None</span></tt>, in which case the classification loop will continue until all parametrizations are labeled, or if an integer is assigned to it, the loop stops after <tt class="docutils literal"><span class="pre">limit</span></tt> iterations.</p>
+<p>In the next sections we will discuss:</p>
+<blockquote>
+<div><p><strong>Contents of Section 2</strong></p>
+<ul class="simple">
+<li><a class="reference internal" href="#section2-type1"><em>Model Checking</em></a></li>
+<li><a class="reference internal" href="#section2-type2"><em>Trap Set Search</em></a></li>
+<li><a class="reference internal" href="#section2-type3"><em>Time series</em></a></li>
+<li><a class="reference internal" href="#section2-custom-classifier"><em>Custom Classifier Interface</em></a></li>
+</ul>
+</div></blockquote>
+<div class="section" id="model-checking">
+<span id="section2-type1"></span><h2>2.1. Model Checking<a class="headerlink" href="#model-checking" title="Permalink to this headline">¶</a></h2>
+<p>Any state transition graph, whether <em>synchronous</em>, <em>asynchronous</em>, <em>unitary</em> or <em>non-unitary</em>, can naturally be interpreted as a <em>transition system for model checking</em>. Recall <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>Appendix A: Asynchronous dynamics</em></a> for definitions of the state transition graph, and <a class="reference internal" href="bibliography.html#bernot04" id="id1">[Bernot04]</a> for a discussion of model checking in the context of regulatory networks.
+A <em>model checking specification file</em> is a text file, that contains a <em>formula</em>: either a <em>linear time logic</em> formula, i.e., LTL, or a <em>computational tree logic</em> formula, i.e., CTL, a description of the <em>initial states</em> in form of a <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>subset term</em></a>, the <em>search type</em>, a <em>property name</em>, a <em>property description</em> and two values specifying the type of dynamics to be considered.</p>
+<p>The <em>model checking classifier</em> divides parametrizations into two classes: those whose dynamics satisfy the specification, denoted by the class label <tt class="docutils literal"><span class="pre">True</span></tt> and those whose dynamics do not satisfy the specification, denoted by class label <tt class="docutils literal"><span class="pre">False</span></tt>. The dynamics of a parametrization satisfies a specification if there is a state among the initial states (search type <tt class="docutils literal"><span class="pre">exists</span></tt>), or all initial states (search type <tt class="docutils literal"><span class="pre">forall</span></tt>), satisfy the temporal formula. A formula may be either a LTL or CTL formula. Both languages and conditions under which a state satisfy a formula are discussed in, e.g., <a class="reference internal" href="bibliography.html#baier08" id="id2">[Baier08]</a>.</p>
+<p>We use the <a class="reference external" href="http://nusmv.fbk.eu/NuSMV/">NuSMV v2.5</a> symbolic model checking software to decide whether the formula holds. The path to the NuSMV executable must be specified in the text file <tt class="docutils literal"><span class="pre">preferences.py</span></tt> by replacing <tt class="docutils literal"><span class="pre">None</span></tt> with the path string:</p>
+<blockquote>
+<div><p><strong>preferences.py</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nusmv_path</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<p><strong>Model checking specification file</strong></p>
+<pre>
+<strong id="grammar-token-model_checking_file">model_checking_file</strong> ::=  <a class="reference internal" href="#grammar-token-model_line"><tt class="xref docutils literal"><span class="pre">model_line</span></tt></a> <a class="reference internal" href="#grammar-token-name_line"><tt class="xref docutils literal"><span class="pre">name_line</span></tt></a> <a class="reference internal" href="#grammar-token-desc_line"><tt class="xref docutils literal"><span class="pre">desc_line</span></tt></a> <a class="reference internal" href="#grammar-token-unit_line"><tt class="xref docutils literal"><span class="pre">unit_line</span></tt></a> <a class="reference internal" href="#grammar-token-sync_line"><tt class="xref docutils literal"><span class="pre">sync_line</span></tt></a> <a class="reference internal" href="#grammar-token-init_line"><tt class="xref docutils literal"><span class="pre">init_line</span></tt></a> <a class="reference internal" href="#grammar-token-search_line"><tt class="xref docutils literal"><span class="pre">search_line</span></tt></a> <a class="reference internal" href="#grammar-token-spec_line"><tt class="xref docutils literal"><span class="pre">spec_line</span></tt></a>
+<strong id="grammar-token-model_line">model_line         </strong> ::=  'classifier = nusmv model checking'
+<strong id="grammar-token-name_line">name_line          </strong> ::=  'property_name =' <a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a>
+<strong id="grammar-token-desc_line">desc_line          </strong> ::=  'property_description =' <a class="reference internal" href="#grammar-token-description"><tt class="xref docutils literal"><span class="pre">description</span></tt></a>
+<strong id="grammar-token-unit_line">unit_line          </strong> ::=  'unitary =' <a class="reference internal" href="#grammar-token-bool"><tt class="xref docutils literal"><span class="pre">bool</span></tt></a>
+<strong id="grammar-token-sync_line">sync_line          </strong> ::=  'synchronous =' <a class="reference internal" href="#grammar-token-bool"><tt class="xref docutils literal"><span class="pre">bool</span></tt></a>
+<strong id="grammar-token-init_line">init_line          </strong> ::=  'initial_states =' <a class="reference internal" href="#grammar-token-selection"><tt class="xref docutils literal"><span class="pre">selection</span></tt></a>
+<strong id="grammar-token-search_line">search_line        </strong> ::=  'search = ' ('exists' | 'forall')
+<strong id="grammar-token-spec_line">spec_line          </strong> ::=  ('ctl' | 'ltl') '_spec =' `temporal logic formula`
+<strong id="grammar-token-bool">bool               </strong> ::=  'true' | 'false'
+<strong id="grammar-token-description">description        </strong> ::=  {<a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a> | ' '}
+</pre>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example of a model checking specification file:</dt>
+<dd><div class="first last highlight-none"><div class="highlight"><pre># Comments begin with a hash
+classifier = nusmv model checking
+property_name = RpoS
+property_description = Is the entry into stationary phase always preceded by the accumulation of the stress response regulator RpoS?
+
+unitary = true
+synchronous = false
+initial_states = v1=0 and (v2&gt;0 or v3=2)
+ctl_spec = EF(Xrrn=0) &amp; !E(Xrpos&gt;0 U Xrrn=0)
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="trap-set-search">
+<span id="section2-type2"></span><h2>2.2. Trap Set Search<a class="headerlink" href="#trap-set-search" title="Permalink to this headline">¶</a></h2>
+<p>Often, we want to divide the parametrizations of a regulatory network into two classes: the one whose dynamics stabilizes within a rectangular region of state space, denoted by class label <tt class="docutils literal"><span class="pre">True</span></tt>, and the one whose dynamics does not stabilize in that region, denoted by class label <tt class="docutils literal"><span class="pre">False</span></tt>. The <em>trap set search</em> classifier performs this task: it decides for a given rectangular region and parametrization, whether the transition graph contains a <em>trap set</em> in the region or not. Recall, that a subset <img class="math" src="_images/math/31a6bb404e26fcfd32ffc4ee4fa4a3a2047d569f.png" alt="Y\subset X"/> of states of a transition graph <img class="math" src="_images/math/b18eb1f3052ce98c9182b9ca69451daef4b7bb08.png" alt="(X,T)"/> is called trap set, if <img class="math" src="_images/math/f90b44ae1527110b64ddbd7578649eee3eb9243b.png" alt="\forall y\in Y:\; yx\in T\implies x\in Y"/>. A rectangular region, or <em>box</em> for short, is defined by a function <img class="math" src="_images/math/bba9ea38121258b822b6cdf72839d341512288b8.png" alt="B:V\rightarrow \{[a..b] \;|\; a\leq b\in\mathbb{N}\}"/> such that <img class="math" src="_images/math/18307d39e27f11d06bb1ece99e2f487d874feb4d.png" alt="B(v_i)\subseteq [0..\rho(v_i)]"/>, where <img class="math" src="_images/math/fe929759844c242682e620a557bf2be3ce3605c7.png" alt="\rho(v_i)"/> is the maximal activity of <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/> (see <a class="reference internal" href="appendixA.html#appendixa-reg-graphs"><em>Appendix A: Regulatory graph</em></a> for definitions). The interval <img class="math" src="_images/math/1933b92a32db0b3b5559a7a65e9696e62a0f0c84.png" alt="B(v_i)=[a..b]"/> is called <em>box interval</em>. A transition graph belongs to the stabilizing class, if there is a trap set <img class="math" src="_images/math/3067a55e79a3cbd2b3368d54b7c13912bd1f1588.png" alt="Y\subseteq X"/>, such that <img class="math" src="_images/math/c1a7ad06b3f76e9ab488f657698e1fda8250eb68.png" alt="Y\subseteq \prod_{i=1}^n B(v_i)"/> is inside the box.</p>
+<p>A trap set specification file is a text file that specifies the box intervals of each component. If the <em>box interval</em> of a component is equal to its activity range, the interval may be omitted.</p>
+<blockquote>
+<div><p><strong>Trap set specification file</strong></p>
+<pre>
+<strong id="grammar-token-trap_set_file">trap_set_file</strong> ::=  <a class="reference internal" href="#grammar-token-trap_line"><tt class="xref docutils literal"><span class="pre">trap_line</span></tt></a> <a class="reference internal" href="#grammar-token-name_line"><tt class="xref docutils literal"><span class="pre">name_line</span></tt></a> <a class="reference internal" href="#grammar-token-desc_line"><tt class="xref docutils literal"><span class="pre">desc_line</span></tt></a> <a class="reference internal" href="#grammar-token-box_line"><tt class="xref docutils literal"><span class="pre">box_line</span></tt></a>
+<strong id="grammar-token-trap_line">trap_line    </strong> ::=  'classifier = trap set'
+<strong id="id3">name_line    </strong> ::=  'property_name =' <a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a>
+<strong id="id4">desc_line    </strong> ::=  'property_description =' <a class="reference internal" href="#grammar-token-description"><tt class="xref docutils literal"><span class="pre">description</span></tt></a>
+<strong id="grammar-token-box_line">box_line     </strong> ::=  <a class="reference internal" href="#grammar-token-interval"><tt class="xref docutils literal"><span class="pre">interval</span></tt></a> {',' <a class="reference internal" href="#grammar-token-interval"><tt class="xref docutils literal"><span class="pre">interval</span></tt></a>}
+<strong id="grammar-token-interval">interval     </strong> ::=  <a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a> '[' <tt class="xref docutils literal"><span class="pre">integer</span></tt> [',' <tt class="xref docutils literal"><span class="pre">integer</span></tt>] ']'
+</pre>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example of trap set specification file:</dt>
+<dd><div class="first last highlight-none"><div class="highlight"><pre># Comments begin with a hash
+classifier = trapset
+property_name = t1
+property_description = Is there a trap set with Xyrn=0, Xrrn&gt;0 and Xppn&gt;1?
+
+box = Xrrn[1,2], Xryn[0,1], Xccn[2], Xyrn[0], Xppn[2,3]
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="time-series">
+<span id="section2-type3"></span><h2>2.3. Time series<a class="headerlink" href="#time-series" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><strong>Time series specification file</strong></p>
+<pre>
+<strong id="grammar-token-time_series_file">time_series_file   </strong> ::=  <a class="reference internal" href="#grammar-token-time_line"><tt class="xref docutils literal"><span class="pre">time_line</span></tt></a> <a class="reference internal" href="#grammar-token-name_line"><tt class="xref docutils literal"><span class="pre">name_line</span></tt></a> <a class="reference internal" href="#grammar-token-desc_line"><tt class="xref docutils literal"><span class="pre">desc_line</span></tt></a> <a class="reference internal" href="#grammar-token-measurement_line"><tt class="xref docutils literal"><span class="pre">measurement_line</span></tt></a> <a class="reference internal" href="#grammar-token-measurement_line"><tt class="xref docutils literal"><span class="pre">measurement_line</span></tt></a>+
+<strong id="grammar-token-time_line">time_line          </strong> ::=  'classifier = time series'
+<strong id="id5">name_line          </strong> ::=  'property_name =' <a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a>
+<strong id="id6">desc_line          </strong> ::=  'property_description =' <a class="reference internal" href="#grammar-token-description"><tt class="xref docutils literal"><span class="pre">description</span></tt></a>
+<strong id="grammar-token-measurement_line">measurement_line   </strong> ::=  <a class="reference internal" href="#grammar-token-measurement"><tt class="xref docutils literal"><span class="pre">measurement</span></tt></a> {' ' <a class="reference internal" href="#grammar-token-measurement"><tt class="xref docutils literal"><span class="pre">measurement</span></tt></a>}
+<strong id="grammar-token-measurement">measurement        </strong> ::=  <a class="reference internal" href="#grammar-token-mon_measurement"><tt class="xref docutils literal"><span class="pre">mon_measurement</span></tt></a> | <a class="reference internal" href="#grammar-token-not_mon_measurement"><tt class="xref docutils literal"><span class="pre">not_mon_measurement</span></tt></a>
+<strong id="grammar-token-mon_measurement">mon_measurement    </strong> ::=  <a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a> '[' <tt class="xref docutils literal"><span class="pre">integer</span></tt> ']'
+<strong id="grammar-token-not_mon_measurement">not_mon_measurement</strong> ::=  <a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a> '(' <tt class="xref docutils literal"><span class="pre">integer</span></tt> ')'
+</pre>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example of a time series specification file:</dt>
+<dd><div class="first last highlight-none"><div class="highlight"><pre>classifier = time series
+property_name = timeseries1
+property_description = Is the time series reproduced?
+
+Xrrn[1] Xryn(0) Xccn[2] Xyrn[0] Xppn(2)
+Xrrn[1] Xryn(0) Xccn(2) Xyrn[0] Xppn(3)
+Xrrn[0] Xryn(0) Xccn[1] Xyrn[0] Xppn(2)
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="custom-classifier-interface">
+<span id="section2-custom-classifier"></span><h2>2.4. Custom Classifier Interface<a class="headerlink" href="#custom-classifier-interface" title="Permalink to this headline">¶</a></h2>
+<p>A custom classifier is an implementation of an algorithm in Python, that computes <em>class labels</em> for parametrizations.
+It is a <em>class</em> that contains information about the property that is investigated, i.e., a short name stored in <a class="reference internal" href="#Classifier.property_name" title="Classifier.property_name"><tt class="xref py py-attr docutils literal"><span class="pre">Classifier.property_name</span></tt></a>, that is used as a column title in the database, the data type of the property stored in <a class="reference internal" href="#Classifier.data_type" title="Classifier.data_type"><tt class="xref py py-attr docutils literal"><span class="pre">Classifier.data_type</span></tt></a> and a text description of the property stored in <a class="reference internal" href="#Classifier.property_description" title="Classifier.property_description"><tt class="xref py py-attr docutils literal"><span class="pre">Classifier.property_description</span></tt></a>.
+The classifier is instantiated and passed to <tt class="docutils literal"><span class="pre">continue_project.py</span></tt> where its <em>interface methods</em> are called repetitively during the <em>classification loop</em>. We discuss the interface methods in detail below.</p>
+<p>For convenience, a Python object called <tt class="xref py py-obj docutils literal"><span class="pre">Model</span></tt> is passed to the classifier on instatiation. A model has a number of methods that facilitate querying the current parametrization for target values and transitions. It also contains data to obtain information about the associated regulatory graph. Once every iteration, the classification loop will update the model by replacing the old with the current parametrization, and call the first interface method, <tt class="xref py py-meth docutils literal"><span class="pre">compute_label()</span></tt>, of the custom classifier. This method must return the label for the current parametrization. If the classifier computed <em>constraints</em> that are <em>sufficient</em> to imply certain class labels, it should return them via the second interface mathod, <a class="reference internal" href="#Classifier.sufficient_constraints" title="Classifier.sufficient_constraints"><tt class="xref py py-meth docutils literal"><span class="pre">Classifier.sufficient_constraints()</span></tt></a>, in form of a list of tuples consisting of (<em>constraint</em>, <em>label</em>). For every tuple, all unlabeled parametrizations that satisfy the <em>constraint</em> will be assigned the <em>label</em> - without being explicitly passed to the classifier. This may speed up classifying, because many parametrizations may be labeled at once. Finally, <tt class="docutils literal"><span class="pre">continue_project.py</span></tt> calls <a class="reference internal" href="#Classifier.priorities" title="Classifier.priorities"><tt class="xref py py-meth docutils literal"><span class="pre">Classifier.priorities()</span></tt></a>, the third interface method, to inquire a constraint that the next unclassified paramatrization should satisfy. <tt class="docutils literal"><span class="pre">continue_project.py</span></tt> will then attempt to find an unlabeled parametrization that satisfies this priority constraint.</p>
+<a class="reference internal image-reference" href="_images/section2_02.jpg"><img alt="_images/section2_02.jpg" class="align-center" src="_images/section2_02.jpg" style="width: 816.2px; height: 291.2px;" /></a>
+<div class="section" id="property-specifications">
+<h3>2.4.1. Property Specifications<a class="headerlink" href="#property-specifications" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="attribute">
+<dt id="Classifier.property_name">
+<tt class="descclassname">Classifier.</tt><tt class="descname">property_name</tt><a class="headerlink" href="#Classifier.property_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>(String) A short name that is used as a column header in the parametrization database.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Classifier.property_description">
+<tt class="descclassname">Classifier.</tt><tt class="descname">property_description</tt><a class="headerlink" href="#Classifier.property_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>(String) A text describtion of the property.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Classifier.data_type">
+<tt class="descclassname">Classifier.</tt><tt class="descname">data_type</tt><a class="headerlink" href="#Classifier.data_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>(String) A description of the data type of the class labels. Allowed types are <tt class="docutils literal"><span class="pre">'string'</span></tt>, <tt class="docutils literal"><span class="pre">'integer'</span></tt> and <tt class="docutils literal"><span class="pre">'boolean'</span></tt>.</p>
+</dd></dl>
+
+</div></blockquote>
+</div>
+<div class="section" id="the-loop-interface">
+<h3>2.4.2. The Loop Interface<a class="headerlink" href="#the-loop-interface" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="method">
+<dt id="Classifier.compute_label">
+<tt class="descclassname">Classifier.</tt><tt class="descname">compute_label</tt><big>(</big><big>)</big><a class="headerlink" href="#Classifier.compute_label" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The label for the current parametrization.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">String</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Classifier.sufficient_constraints">
+<tt class="descclassname">Classifier.</tt><tt class="descname">sufficient_constraints</tt><big>(</big><big>)</big><a class="headerlink" href="#Classifier.sufficient_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Sufficient constraints and labels that are used to do <em>bulk labeling</em>. All non-classified parametrizations, that satisfy one of the constraints will be assigned the corresponding label.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List of tuples</td>
+</tr>
+</tbody>
+</table>
+<p>Each tuple in the return list consists of a constraint string and a label string.
+If no sufficient constraints could be obtained, an empty list should be returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Classifier.priorities">
+<tt class="descclassname">Classifier.</tt><tt class="descname">priorities</tt><big>(</big><big>)</big><a class="headerlink" href="#Classifier.priorities" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A constraint that describes parametrizations that are preferred in the next classification iteration.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">String</td>
+</tr>
+</tbody>
+</table>
+<p>If the classifier has no priority, an empty string should be returned.</p>
+</dd></dl>
+
+</div></blockquote>
+</div>
+<div class="section" id="inquiries-about-the-regulatory-graph">
+<h3>2.4.3. Inquiries about the Regulatory graph<a class="headerlink" href="#inquiries-about-the-regulatory-graph" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>The <tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt> class provides several attributes for inquiring the regulatory graph of the project.</p>
+<dl class="attribute">
+<dt id="Model.components">
+<tt class="descclassname">Model.</tt><tt class="descname">components</tt><a class="headerlink" href="#Model.components" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Tuple of strings) Sorted tuple of the component names.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>:</p>
+<div class="highlight-python"><pre>Model.components
+&gt;&gt;&gt; ('v1','v2')</pre>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Model.regulators">
+<tt class="descclassname">Model.</tt><tt class="descname">regulators</tt><a class="headerlink" href="#Model.regulators" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Dictionary) Components are keys and sorted tuple of regulators are values.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>:</p>
+<div class="highlight-python"><pre>Model.regulators
+&gt;&gt;&gt; {'v1':('v1','v2'), 'v2':('v1','v2')}</pre>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Model.targets">
+<tt class="descclassname">Model.</tt><tt class="descname">targets</tt><a class="headerlink" href="#Model.targets" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Dictionary) Components are keys and sorted tuple of targets are values.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>:</p>
+<div class="highlight-python"><pre>Model.targets
+&gt;&gt;&gt; {'v1':('v1','v2'), 'v2':('v1','v2')}</pre>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Model.thresholds">
+<tt class="descclassname">Model.</tt><tt class="descname">thresholds</tt><a class="headerlink" href="#Model.thresholds" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Dictionary) Interactions are keys and sorted tuple of thresholds are values.
+Interactions are tuples consisting of components.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>:</p>
+<div class="highlight-python"><pre>Model.thresholds
+&gt;&gt;&gt; {('v1', 'v2'): (1, 2), ('v1', 'v1'): (1,), ('v2', 'v1'): (1,), ('v2', 'v2'): (2,)}</pre>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Model.maxactivity">
+<tt class="descclassname">Model.</tt><tt class="descname">maxactivity</tt><a class="headerlink" href="#Model.maxactivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Dictionary) Components are keys and maximal activities are values.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>:</p>
+<div class="highlight-python"><pre>Model.maxactivity
+&gt;&gt;&gt; {'v1': 2, 'v2': 2}</pre>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
+<div class="section" id="inquiries-about-the-current-parametrization">
+<h3>2.4.4. Inquiries about the Current Parametrization<a class="headerlink" href="#inquiries-about-the-current-parametrization" title="Permalink to this headline">¶</a></h3>
+<p>Description of methods for inquiring the transition graph of the current parametrization. Examples are given for the <a class="reference internal" href="running_example.html"><em>running example</em></a>.</p>
+<blockquote>
+<div><dl class="method">
+<dt id="Model.asynchronous_successors">
+<tt class="descclassname">Model.</tt><tt class="descname">asynchronous_successors</tt><big>(</big><em>State</em><big>)</big><a class="headerlink" href="#Model.asynchronous_successors" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>State</strong> (<em>List of integers</em>) &#8211; Contains one integer for each component of the <a class="reference internal" href="appendixA.html#appendixa-reg-graphs"><em>regulatory graph</em></a>. The <img class="math" src="_images/math/ffbd55597272a9914166c5dd1e71a5d23d842ddd.png" alt="i^{th}"/> integer represents the activity of the component that is at the <img class="math" src="_images/math/ffbd55597272a9914166c5dd1e71a5d23d842ddd.png" alt="i^{th}"/> position in the sorted list of component names.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of successor states of the <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>asynchronous and unitary state transition graph</em></a> of the current parametrization.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">List of States.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.synchronous_successor">
+<tt class="descclassname">Model.</tt><tt class="descname">synchronous_successor</tt><big>(</big><em>State</em><big>)</big><a class="headerlink" href="#Model.synchronous_successor" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>State</strong> (<em>List of integers</em>) &#8211; Contains one integer for each component of the <a class="reference internal" href="appendixA.html#appendixa-reg-graphs"><em>regulatory graph</em></a>. The <img class="math" src="_images/math/ffbd55597272a9914166c5dd1e71a5d23d842ddd.png" alt="i^{th}"/> integer represents the activity of the component that is at the <img class="math" src="_images/math/ffbd55597272a9914166c5dd1e71a5d23d842ddd.png" alt="i^{th}"/> position in the sorted list of component names.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The successor state of the <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>synchronous and unitary state transition graph</em></a> of the current parametrization.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">A State.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.update_Function">
+<tt class="descclassname">Model.</tt><tt class="descname">update_Function</tt><big>(</big><em>State</em><big>)</big><a class="headerlink" href="#Model.update_Function" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>State</strong> (<em>List of integers</em>) &#8211; Contains one integer for each component of the <a class="reference internal" href="appendixA.html#appendixa-reg-graphs"><em>regulatory graph</em></a>. The <img class="math" src="_images/math/ffbd55597272a9914166c5dd1e71a5d23d842ddd.png" alt="i^{th}"/> integer represents the activity of the component that is at the <img class="math" src="_images/math/ffbd55597272a9914166c5dd1e71a5d23d842ddd.png" alt="i^{th}"/> position in the sorted list of component names.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The successor state of the <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>synchronous and non-unitary state transition graph</em></a> of the current parametrization.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">A State.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.target_values">
+<tt class="descclassname">Model.</tt><tt class="descname">target_values</tt><big>(</big><em>StateFormula</em>, <em>Component</em><big>)</big><a class="headerlink" href="#Model.target_values" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>StateFormula</strong> (<em>String</em>) &#8211; A <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a>.</li>
+<li><strong>Component</strong> (<em>String</em>) &#8211; The component used for <a class="reference internal" href="appendixB.html#appendixb-parameter-reference"><em>parameter reference</em></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Target values of the referenced parameters of current parametrization .</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List of integers</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.inequality_abs">
+<tt class="descclassname">Model.</tt><tt class="descname">inequality_abs</tt><big>(</big><em>StateFormula</em>, <em>Component</em>, <em>Operator</em>, <em>Activity</em><big>)</big><a class="headerlink" href="#Model.inequality_abs" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>StateFormula</strong> (<em>String</em>) &#8211; A <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a>.</li>
+<li><strong>Component</strong> (<em>String</em>) &#8211; The component used for <a class="reference internal" href="appendixB.html#appendixb-parameter-reference"><em>parameter reference</em></a>.</li>
+<li><strong>Operator</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'&lt;','&lt;=','=','&gt;=','&gt;','!='</span></tt>.</li>
+<li><strong>Activity</strong> (<em>Integer</em>) &#8211; An activity.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether the current parametrization satisfies the <a class="reference internal" href="appendixB.html#appendixb-inequalities"><em>inequality_abs predicate</em></a> with the given arguments.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Boolean</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.inequality_rel">
+<tt class="descclassname">Model.</tt><tt class="descname">inequality_rel</tt><big>(</big><em>StateFormula1</em>, <em>Component1</em>, <em>Operator</em>, <em>StateFormula2</em>, <em>Component2</em><big>)</big><a class="headerlink" href="#Model.inequality_rel" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>StateFormula1</strong> (<em>String</em>) &#8211; The left-hand side <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a>.</li>
+<li><strong>Component1</strong> (<em>String</em>) &#8211; The component for left-hand side <a class="reference internal" href="appendixB.html#appendixb-parameter-reference"><em>parameter reference</em></a>.</li>
+<li><strong>Operator</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'&lt;','&lt;=','=','&gt;=','&gt;','!='</span></tt>.</li>
+<li><strong>StateFormula2</strong> (<em>String</em>) &#8211; The right-hand side <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a>.</li>
+<li><strong>Component2</strong> (<em>String</em>) &#8211; The component for right-hand side <a class="reference internal" href="appendixB.html#appendixb-parameter-reference"><em>parameter reference</em></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether the current parametrization satisfies the <a class="reference internal" href="appendixB.html#appendixb-inequalities"><em>inequality_rel predicate</em></a> with the given arguments.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Boolean</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.identity">
+<tt class="descclassname">Model.</tt><tt class="descname">identity</tt><big>(</big><em>Quantifier</em>, <em>StateFormula</em>, <em>Component</em>, <em>Operator</em>, <em>Activity</em><big>)</big><a class="headerlink" href="#Model.identity" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Quantifier</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'All','Some'</span></tt></li>
+<li><strong>StateFormula</strong> (<em>String</em>) &#8211; A <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a>.</li>
+<li><strong>Component</strong> (<em>String</em>) &#8211; The component used for <a class="reference internal" href="appendixB.html#appendixb-parameter-reference"><em>parameter reference</em></a>.</li>
+<li><strong>Operator</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'&lt;','&lt;=','=','&gt;=','&gt;','!='</span></tt>.</li>
+<li><strong>Activity</strong> (<em>Integer</em>) &#8211; An activity.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether the current parametrization satisfies the <a class="reference internal" href="appendixB.html#appendixb-inequalities"><em>inequality_abs predicate</em></a> with the given arguments.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Boolean</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.multiplex">
+<tt class="descclassname">Model.</tt><tt class="descname">multiplex</tt><big>(</big><em>StateFormulas</em>, <em>Component</em><big>)</big><a class="headerlink" href="#Model.multiplex" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>StateFormulas</strong> (<em>List of strings</em>) &#8211; The &#8220;compounds&#8221; of a <a class="reference internal" href="appendixB.html#appendixb-multiplexes"><em>multiplex</em></a>.</li>
+<li><strong>Component</strong> (<em>String</em>) &#8211; The component that is regulated by the multiplex.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether the current parametrization satisfies the <a class="reference internal" href="appendixB.html#appendixb-multiplexes"><em>multiplex predicate</em></a> with the given arguments.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Boolean</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.edge_label">
+<tt class="descclassname">Model.</tt><tt class="descname">edge_label</tt><big>(</big><em>Label</em>, <em>Regulator</em>, <em>Target</em>, <em>Thresholds</em>, <em>StateFormula=&quot;True&quot;</em><big>)</big><a class="headerlink" href="#Model.edge_label" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Label</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'Activating','ActivatingOnly','Inhibiting','InhibitingOnly','Observable'</span></tt></li>
+<li><strong>Threshold</strong> &#8211; The interaction threshold of the label.</li>
+<li><strong>StateFormula</strong> (<em>String</em>) &#8211; The optional <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a> that restricts the contexts must satisfy the constraint (see <a class="reference internal" href="appendixB.html#appendixb-edge-labels"><em>edge_label predicate</em></a>). The default <tt class="docutils literal"><span class="pre">True</span></tt> enforces no restriction.</li>
+<li><strong>Regulator</strong> (<em>String</em>) &#8211; The regulator component of the interaction.</li>
+<li><strong>Target</strong> (<em>String</em>) &#8211; The target component of the interaction.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether the current parametrization satisfies the <a class="reference internal" href="appendixB.html#appendixb-edge-labels"><em>edge_label predicate</em></a> with the given arguments.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Boolean</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.subgraph">
+<tt class="descclassname">Model.</tt><tt class="descname">subgraph</tt><big>(</big><em>Graph</em><big>)</big><a class="headerlink" href="#Model.subgraph" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Graph</strong> (<em>Dictionary</em>) &#8211; A successor-based representation of a subgraph of the <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>unitary and asynchronous state transition graph</em></a>. Each key of the dictionary is a state. The value of a key is a list of successor states.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Whether the current parametrization satisfies the <a class="reference internal" href="appendixB.html#appendixb-subgraphs"><em>subgraph predicate</em></a> with the given argument.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.path">
+<tt class="descclassname">Model.</tt><tt class="descname">path</tt><big>(</big><em>Path</em><big>)</big><a class="headerlink" href="#Model.path" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>Path</strong> (<em>List of states</em>) &#8211; A list of states, representing a path in the <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>unitary and asynchronous state transition graph</em></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Whether the current parametrization satisfies the <a class="reference internal" href="appendixB.html#appendixb-subgraphs"><em>path predicate</em></a> with the given argument.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Model.compare">
+<tt class="descclassname">Model.</tt><tt class="descname">compare</tt><big>(</big><em>Quantifier</em>, <em>StateFormula</em>, <em>Component</em>, <em>Operator</em><big>)</big><a class="headerlink" href="#Model.compare" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>StateFormula</strong> (<em>String</em>) &#8211; A <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a>.</li>
+<li><strong>Quantifier</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'All','Some'</span></tt></li>
+<li><strong>Component</strong> (<em>String</em>) &#8211; The component used for <a class="reference internal" href="appendixB.html#appendixb-parameter-reference"><em>parameter reference</em></a>.</li>
+<li><strong>Operator</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'&lt;','&lt;=','=','&gt;=','&gt;','!='</span></tt>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>...</p>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><p>...</p>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="custom-classifier-implementation-examples">
+<h2>2.5. Custom Classifier Implementation Examples<a class="headerlink" href="#custom-classifier-implementation-examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="deterministic-path-classifier">
+<h3>2.5.1. Deterministic path classifier<a class="headerlink" href="#deterministic-path-classifier" title="Permalink to this headline">¶</a></h3>
+<p>As an example we will implement an algorithm that computes the length of a <em>deterministic path</em> starting in a given initial state.
+A path <img class="math" src="_images/math/27990eefa4ebc7fe4532e1355a45374d61a72946.png" alt="(x^1,x^2,\dots,x^{k+1})"/> of the asynchronous transition graph <img class="math" src="_images/math/b18eb1f3052ce98c9182b9ca69451daef4b7bb08.png" alt="(X,T)"/> is <em>deterministic</em>,
+if for all <img class="math" src="_images/math/bdf78ea30138998b5908589501bee9bbda9e615a.png" alt="i\in[1..k],z\in X:\;x^iz\in T\implies z=x^{i+1}"/>. The length of such a path is <img class="math" src="_images/math/8c325612684d41304b9751c175df7bcc0f61f64f.png" alt="k"/>.
+As we will see, this classifier serves as a good example for how custom algorithms are implemented, because it is simple, and makes use of most features of the interface.
+We create a file called <tt class="docutils literal"><span class="pre">detpath.py</span></tt> which contains a single class called <tt class="docutils literal"><span class="pre">Classifier</span></tt>.
+During initialization the <tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt> is stored as an attribute, and the initial state is computed, depending on the number of components of the network. This is an example of <em>hard-wiring</em> the property information that the predefined classifiers get from text files (see <a class="reference internal" href="#section2-type1"><em>Type 1</em></a>, <a class="reference internal" href="#section2-type2"><em>Type 2</em></a> and <a class="reference internal" href="#section2-type3"><em>Type 3</em></a>) into the algorithm.
+In this example the initial state is the one, where every component is below all its thresholds, i.e., the <em>zero</em> state.</p>
+<blockquote>
+<div><p><strong>detpath.py</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Classifier</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Model</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">property_name</span> <span class="o">=</span> <span class="s">&#39;dpzero&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">property_description</span> <span class="o">=</span> <span class="s">&#39;Computes the length of a deterministic path starting in the zero state.&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span> <span class="o">=</span> <span class="s">&#39;integer&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">initial_state</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Model</span><span class="o">.</span><span class="n">components</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. Section 2: Classifying</a><ul>
+<li><a class="reference internal" href="#model-checking">2.1. Model Checking</a></li>
+<li><a class="reference internal" href="#trap-set-search">2.2. Trap Set Search</a></li>
+<li><a class="reference internal" href="#time-series">2.3. Time series</a></li>
+<li><a class="reference internal" href="#custom-classifier-interface">2.4. Custom Classifier Interface</a><ul>
+<li><a class="reference internal" href="#property-specifications">2.4.1. Property Specifications</a></li>
+<li><a class="reference internal" href="#the-loop-interface">2.4.2. The Loop Interface</a></li>
+<li><a class="reference internal" href="#inquiries-about-the-regulatory-graph">2.4.3. Inquiries about the Regulatory graph</a></li>
+<li><a class="reference internal" href="#inquiries-about-the-current-parametrization">2.4.4. Inquiries about the Current Parametrization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-classifier-implementation-examples">2.5. Custom Classifier Implementation Examples</a><ul>
+<li><a class="reference internal" href="#deterministic-path-classifier">2.5.1. Deterministic path classifier</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="section1.html"
+                        title="previous chapter">1. Section 1: Initial Parametrizations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="section3.html"
+                        title="next chapter">3. Section 3: Analysis</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/section2.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="section3.html" title="3. Section 3: Analysis"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="section1.html" title="1. Section 1: Initial Parametrizations"
+             >previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, H. Klarner, S. Meiers, M. Seeger, J. Tackmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

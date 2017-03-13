@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. Appendix B: Parameter Constraint Language &mdash; Enumerator Tool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Enumerator Tool 1.0 documentation" href="index.html" />
+    <link rel="next" title="6. Appendix C: Case Studies" href="appendixC.html" />
+    <link rel="prev" title="4. Appendix A: Finite Dynamical Systems" href="appendixA.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="appendixC.html" title="6. Appendix C: Case Studies"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="appendixA.html" title="4. Appendix A: Finite Dynamical Systems"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="appendix-b-parameter-constraint-language">
+<h1>5. Appendix B: Parameter Constraint Language<a class="headerlink" href="#appendix-b-parameter-constraint-language" title="Permalink to this headline">¶</a></h1>
+<p>In this section we introduce a high-level parameter constraint language. In <a class="reference internal" href="section1.html"><em>Section 1: Initial Parametrizations</em></a> we use this language to define the initial parametrizations.
+In <a class="reference internal" href="section2.html"><em>Section 2: Classifying</em></a> the same language is used to mark parametrizations that ought to be classified, but also to speed up the classification by <em>learning</em> from the computations performed for a particular parametrization.
+The language is based on an original approach to referencing parameters, and 6 types of predicates that use this approach.
+We will discuss the semantics and possible applications in modelling of each of the 6 predicate types we have implemented.</p>
+<blockquote>
+<div><p><strong>Low-level constraints</strong></p>
+<p>We call constraints <em>low-level</em>, if they are logical propositions over parameter inequalities.
+A parametrization <img class="math" src="_images/math/4b4cade9ca8a2c8311fafcf040bc5b15ca507f52.png" alt="P"/> satisfies a low-level constraint <img class="math" src="_images/math/66981fa3920210c6ad8dbe5e968783d5dd7520c3.png" alt="\gamma"/>, if the <img class="math" src="_images/math/4b4cade9ca8a2c8311fafcf040bc5b15ca507f52.png" alt="P"/>-valuation, <img class="math" src="_images/math/5947735175a0dda5449ce503c74998587565a9b9.png" alt="P(\gamma)"/>, of the constraint is true.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: An example of a low-level constraint <img class="math" src="_images/math/66981fa3920210c6ad8dbe5e968783d5dd7520c3.png" alt="\gamma"/> is</p>
+<div class="math">
+<p><img src="_images/math/316cf805a666dadbe3c6440a3bfefab64dae7558.png" alt="\gamma\equiv\quad(K_1^{00}&gt;0\;and\; K_1^{01}&gt;K_1^{10})."/></p>
+</div><p><strong>P-valuation</strong></p>
+<p>A parametrization <img class="math" src="_images/math/4b4cade9ca8a2c8311fafcf040bc5b15ca507f52.png" alt="P"/> satisfies the low level constraint <img class="math" src="_images/math/66981fa3920210c6ad8dbe5e968783d5dd7520c3.png" alt="\gamma"/>, if</p>
+<div class="math">
+<p><img src="_images/math/1852b9190c382a1b9d377e460ac1b92dcc5d9a49.png" alt="P(\gamma):\equiv\quad(P_1^{00}&gt;0\;and\; P_1^{01}&gt;P_1^{10})=True."/></p>
+</div></div></blockquote>
+<p>The difficulty here is that biological assumptions are in general not precise enough to be formulated as short low-level constraints.
+Rather, the biological assumptions are characterized by ambiguity, which results in long low-level constraints, that are tedious to assemble by hand.</p>
+<p>A good example of this vagueness are assumptions about the effect that a regulator has on its target, i.e., the <em>edge label</em> of an interaction. We may know that a regulator inhibits the activity of its target, but we do not know the exact context in which the inhibition is observable. We can only safely assume that <em>there is</em> a context such that increasing the regulator&#8217;s activity decreases the target&#8217;s activity.</p>
+<blockquote>
+<div><p><em>Example</em>: Consider a regulatory graph, where a component <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/> has exactly 3 regulators <img class="math" src="_images/math/9d7136944df37134765bed6cb191ae446428996e.png" alt="v_2,v_3"/> and <img class="math" src="_images/math/9f7a4857c1002299b661410aa6d86b2e7a7742c5.png" alt="v_4"/>.
+Assume also that each interaction targeting <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/> has exactly 2 <a class="reference internal" href="appendixA.html#appendixa-interaction-intensities"><em>intensities</em></a>.
+We want make the assumption that <img class="math" src="_images/math/e3c09383f52ff7db11358e4aa6ca6c0307b02d76.png" alt="v_2"/> is an inhibitor of the activity of <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/>, but we do not know which context is supposed to demonstrate the inhibition. We must consider all possible cases feasible and resort to the following low-level constraint:</p>
+<div class="math">
+<p><img src="_images/math/92579160249cdfc533e5971b05c16e4d83b0598d.png" alt="K_1^{000}&gt;K_1^{100}\;or\;K_1^{001}&gt;K_1^{101}\;or\;K_1^{010}&gt;K_1^{110}\;or\;K_1^{011}&gt;K_1^{111}"/></p>
+</div></div></blockquote>
+<p>For this reason we have devised <em>predicates</em>, like <img class="math" src="_images/math/e7a75350831d013842b91efcf95d1619f04c10c5.png" alt="Inhibiting(v_2,v_1)"/>, that are equivalent to longer low-level constraints, but make the modelling process more convenient, because we do not need to think about <em>which</em> parameters are concerned nor <em>how</em> the respective inequalities are connected.</p>
+<p>The predicates work by a feature called <em>parameter reference</em>.
+It is a concise form of refering to a subset <img class="math" src="_images/math/8b4655f4897612031d426952ed93c05eac9df00b.png" alt="K'\subset K_{\mathcal R}"/> of the kinetic parameters of a regulatory graph <img class="math" src="_images/math/71b1d4863ff0b5eadb4bca7ad84560c55f63976c.png" alt="\mathcal R"/>.
+All that is required to define the set <img class="math" src="_images/math/eb790556c91143b323450e791cf380a032b4edbb.png" alt="K'"/> is a state formula <img class="math" src="_images/math/2c175f60eecef1de7560c3bdea495d69f26f719d.png" alt="\phi"/> and a component <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/>:</p>
+<blockquote id="appendixb-parameter-reference">
+<div><p><strong>Parameter reference</strong></p>
+<p>Recall from <a class="reference internal" href="appendixA.html#appendixa-regulatory-context"><em>Appendix A: Regulatory contexts</em></a> that <img class="math" src="_images/math/0d679fd9e0eb60e30e2415e98559986854725131.png" alt="\psi_i^c"/> denotes the state formula associated to the regulatory context <img class="math" src="_images/math/3372c1cb6d68cf97c2d231acc0b47b95a9ed04cc.png" alt="c"/> of component <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/>.
+The parameter reference, denoted by <img class="math" src="_images/math/a9e6d941e9cf504d896934157ae7ae203bb80caf.png" alt="K_i[\phi]"/>, of a given state formula <img class="math" src="_images/math/2c175f60eecef1de7560c3bdea495d69f26f719d.png" alt="\phi"/> and a component <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/> is defined to be the set of all kinetic parameters whose context states <img class="math" src="_images/math/f9fcc7070abd31eb4e5664e21447bc15daa028ad.png" alt="X[\psi_i^c]"/> <em>intersect</em> <img class="math" src="_images/math/efb5c640d80dbfcdd02960311c118fcdf1ae8ce3.png" alt="X[\phi]"/>:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/67fb264b2f96ffb267b510ca3abd7ccd7960aaeb.png" alt="K_i[\phi]:=\{K_i^c\in K\;|\; X[\phi]\cap X[\psi_i^c]\neq\emptyset\}"/></p>
+</div></div></blockquote>
+<p>In our constraint language, the syntax of a parameter reference is:</p>
+<blockquote>
+<div><pre>
+<strong id="grammar-token-parameter_reference">parameter_reference</strong> ::=  <a class="reference internal" href="appendixA.html#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a> '[' <a class="reference internal" href="appendixA.html#grammar-token-component"><tt class="xref docutils literal"><span class="pre">component</span></tt></a> ']'
+</pre>
+</div></blockquote>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: Consider the state formula <img class="math" src="_images/math/2191aad1a8caa41d074818bd1e4cf4fd3d930cb3.png" alt="\phi:\equiv\quad v_1\leq v_2"/>. The referenced states, in concise tuple notation, are:</p>
+<div class="math">
+<p><img src="_images/math/c002e1728e48f56365750137131de3db69902c28.png" alt="X[\phi]=\{00,01,11,02,12,22\}"/></p>
+</div><p>With <img class="math" src="_images/math/2c175f60eecef1de7560c3bdea495d69f26f719d.png" alt="\phi"/> we can make a parameter reference for either <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/> or <img class="math" src="_images/math/e3c09383f52ff7db11358e4aa6ca6c0307b02d76.png" alt="v_2"/>:</p>
+<div class="math">
+<p><img src="_images/math/a155a00ffa98e00044ff49cc2938ec07438752eb.png" alt="K_1[\phi]=\{K_1^{00},K_1^{01},K_1^{11}\},\;\;K_2[\phi]=\{K_2^{00},K_2^{10},K_2^{01},K_2^{11},K_2^{21}\}"/></p>
+</div><p>The reaseon why <img class="math" src="_images/math/69c33899470a33116b5ba4f5e1f8f17932dc90f1.png" alt="K_1^{01}\in K_1[\phi]"/> is that <img class="math" src="_images/math/ae2734e36f79105d3f5bb6aa33df75ce18974ccb.png" alt="X[\psi_1^{01}]=\{01,02\}"/>, which intersects <img class="math" src="_images/math/e05d091d276d6fb5122b2a4dc868367818e8ef9c.png" alt="X[\phi_1]"/>.
+The reason why <img class="math" src="_images/math/c6a006419d0304346a25d95e2bde7752ba0ba567.png" alt="K_1^{10}\notin K_1[\phi]"/> is that <img class="math" src="_images/math/4a489b3b297d5c244d20293bbe081b0c5633be85.png" alt="X[\psi_1^{10}]=\{10,20\}"/>, which does not intersect <img class="math" src="_images/math/e05d091d276d6fb5122b2a4dc868367818e8ef9c.png" alt="X[\phi_1]"/>.</p>
+</div></blockquote>
+<p>Now we are set to discuss the following constraints:</p>
+<blockquote>
+<div><p><strong>Table of contents of Appendix B</strong></p>
+<ul class="simple">
+<li><a class="reference internal" href="#appendixb-inequalities"><em>Predicate Type 1: Inequalities</em></a></li>
+<li><a class="reference internal" href="#appendixb-identities"><em>Predicate Type 2: Identities</em></a></li>
+<li><a class="reference internal" href="#appendixb-multiplexes"><em>Predicate Type 3: Multiplexes</em></a></li>
+<li><a class="reference internal" href="#appendixb-edge-labels"><em>Predicate Type 4: Edge Labels</em></a></li>
+<li><a class="reference internal" href="#appendixb-subgraphs"><em>Predicate Type 5: Subgraphs</em></a></li>
+<li><a class="reference internal" href="#appendixb-comparisons"><em>Predicate Type 6: Comparisons</em></a></li>
+</ul>
+</div></blockquote>
+<div class="section" id="predicate-type-1-inequalities">
+<span id="appendixb-inequalities"></span><h2>5.1. Predicate Type 1: Inequalities<a class="headerlink" href="#predicate-type-1-inequalities" title="Permalink to this headline">¶</a></h2>
+<p>Inequality constraints restrict the values of a set of parameters to satisfy all - or some - inequalities. The left-hand side of each inequality is always from the first set of parameters. For the right-hand side, we distinguish two types of inequalities: Either the right-hand side of the inequality is an integer value, in which case we have an <a class="reference internal" href="#grammar-token-inequality_abs"><tt class="xref std std-token docutils literal"><span class="pre">inequality_abs</span></tt></a> constraint, or a second set of parameters is passed to the right hand side, in which we have a <a class="reference internal" href="#grammar-token-inequality_rel"><tt class="xref std std-token docutils literal"><span class="pre">inequality_rel</span></tt></a> constraint.</p>
+<blockquote>
+<div><p><strong>Syntax</strong></p>
+<pre>
+<strong id="grammar-token-inequality">inequality    </strong> ::=  <a class="reference internal" href="#grammar-token-inequality_abs"><tt class="xref docutils literal"><span class="pre">inequality_abs</span></tt></a> | <a class="reference internal" href="#grammar-token-inequality_rel"><tt class="xref docutils literal"><span class="pre">inequality_rel</span></tt></a>
+<strong id="grammar-token-inequality_abs">inequality_abs</strong> ::=  <a class="reference internal" href="#grammar-token-quantifier"><tt class="xref docutils literal"><span class="pre">quantifier</span></tt></a> '(' <a class="reference internal" href="#grammar-token-parameter_reference"><tt class="xref docutils literal"><span class="pre">parameter_reference</span></tt></a> <a class="reference internal" href="#grammar-token-operator"><tt class="xref docutils literal"><span class="pre">operator</span></tt></a> <a class="reference internal" href="#grammar-token-activity"><tt class="xref docutils literal"><span class="pre">activity</span></tt></a> ')'
+<strong id="grammar-token-inequality_rel">inequality_rel</strong> ::=  <a class="reference internal" href="#grammar-token-quantifier"><tt class="xref docutils literal"><span class="pre">quantifier</span></tt></a> '(' <a class="reference internal" href="#grammar-token-parameter_reference"><tt class="xref docutils literal"><span class="pre">parameter_reference</span></tt></a> <a class="reference internal" href="#grammar-token-operator"><tt class="xref docutils literal"><span class="pre">operator</span></tt></a> <a class="reference internal" href="#grammar-token-parameter_reference"><tt class="xref docutils literal"><span class="pre">parameter_reference</span></tt></a> ')'
+<strong id="grammar-token-operator">operator      </strong> ::=  '&lt;'|'&lt;='|'='|'&gt;='|'&gt;'|'!='
+</pre>
+<p><strong>Semantics</strong></p>
+<p><em>Inequality_Abs</em>: Let <img class="math" src="_images/math/75d7e23ef166632281dd2501981348d2c4ccc277.png" alt="K'=\{K_i^{c_1},K_i^{c_2},\dots,K_i^{c_r}\}"/> be the referenced parameters, <img class="math" src="_images/math/0b8cb28f306e3c60a329df5fdc0fb6b4b0e0465e.png" alt="\star\in\{&lt;,\leq,=,\geq,&gt;,\neq\}"/> the operator and <img class="math" src="_images/math/42e66f73879d0e431bb1c3680708f3b3631b6e50.png" alt="a\in\mathbb N"/> the activity of an <a class="reference internal" href="#grammar-token-inequality_abs"><tt class="xref std std-token docutils literal"><span class="pre">inequality_abs</span></tt></a> constraint.
+Depending on the quantifier, the low-level constraint becomes:</p>
+<div class="math">
+<p><img src="_images/math/1b26640b5b8bb0f0545582cbc1b71137dbe796b6.png" alt="\begin{array}{ll}
+\textrm{Quantifier}&amp;    \textrm{Low-level constraint}\\
+\hline\hline
+\textrm{All}:&amp;                  K_i^{c_1}\star a\;and\;K_i^{c_2}\star a\;and\;\dots\;and\; K_i^{c_r}\star a\\
+\textrm{Some}:&amp;                 K_i^{c_1}\star a\;or\;K_i^{c_2}\star a\;or\;\dots\;or\; K_i^{c_r}\star a
+\end{array}"/></p>
+</div><p><em>Inequality_Rel</em>: Let <img class="math" src="_images/math/75d7e23ef166632281dd2501981348d2c4ccc277.png" alt="K'=\{K_i^{c_1},K_i^{c_2},\dots,K_i^{c_r}\}"/> be the first referenced parameters, <img class="math" src="_images/math/0b8cb28f306e3c60a329df5fdc0fb6b4b0e0465e.png" alt="\star\in\{&lt;,\leq,=,\geq,&gt;,\neq\}"/> the operator and <img class="math" src="_images/math/7f77047fe8de768365ff1d1a25cd69207fc70e44.png" alt="K''=\{K_j^{d_1},K_j^{d_2},\dots,K_j^{d_s}\}"/> the second referenced parameters of an <a class="reference internal" href="#grammar-token-inequality_rel"><tt class="xref std std-token docutils literal"><span class="pre">inequality_rel</span></tt></a> constraint.
+Depending on the quantifier, the low-level constraint becomes:</p>
+<div class="math">
+<p><img src="_images/math/ee0f2bda364d337b1c33e4c17240bdc8faaf1c82.png" alt="\begin{array}{ll}
+\textrm{Quantifier}&amp;    \textrm{Low-level constraint}\\
+\hline\hline
+\textrm{All}:&amp;                  K_i^{c_1}\star K_j^{d_1}\;and\;\dots\;and\;K_i^{c_r}\star K_j^{d_1}\;and\;\dots\;and\;K_i^{c_1}\star K_j^{d_s}\;and\;\dots\;and\;K_i^{c_r}\star K_j^{d_s}\\
+\textrm{Some}:&amp;                 K_i^{c_1}\star K_j^{d_1}\;or\;\dots\;or\;K_i^{c_r}\star K_j^{d_1}\;or\;\dots\;or\;K_i^{c_1}\star K_j^{d_s}\;or\;\dots\;or\;K_i^{c_r}\star K_j^{d_s}
+\end{array}"/></p>
+</div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: Let us consider the state formula <img class="math" src="_images/math/522e0db3780b71e4bce6aa86a2b73d63300bf3b5.png" alt="v_1\leq v_2"/>. The parameter reference for <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/> is: <img class="math" src="_images/math/f8572722cc5ab74bab4273b8fb722e22620f5d9f.png" alt="K_1[v_1\leq v_2]=\{K_1^{00}, K_1^{01}, K_1^{11}\}"/>,
+and the one for <img class="math" src="_images/math/e3c09383f52ff7db11358e4aa6ca6c0307b02d76.png" alt="v_2"/> is <img class="math" src="_images/math/316f2292bb98645557b0aa4979ee1e22d8ce35e4.png" alt="K_2[v_1\leq v_2]=\{K_2^{00},K_2^{10},K_2^{01},K_2^{11},K_2^{21}\}"/>. With the two quantifiers we can formulate two <a class="reference internal" href="#grammar-token-inequality_abs"><tt class="xref std std-token docutils literal"><span class="pre">inequality_abs</span></tt></a> constraints and two <a class="reference internal" href="#grammar-token-inequality_rel"><tt class="xref std std-token docutils literal"><span class="pre">inequality_rel</span></tt></a> constraints. Their equivalent low-level constraints are:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/9c912f9485835e076a9429417cb736725cf2ad37.png" alt="\begin{array}{ll}
+{\tt Some(v1&lt;=v2[v1] = 0)}\equiv\quad&amp; K_1^{00}=0\;or\;K_1^{01}=0\;or\;K_1^{11}\\
+{\tt All(v1&lt;=v2[v1] = 0)}\equiv\quad&amp; K_1^{00}=0\;and\;K_1^{01}=0\;and\;K_1^{11}\\
+{\tt Some(v1&lt;=v2[v1] &lt; v1&lt;=v2[v2])}\equiv\quad&amp;   K_1^{00}&lt;K_2^{00}\;or\;K_1^{01}&lt;K_2^{00}\;or\;K_1^{11}&lt;K_2^{00}\;or\;\\
+                                                                                        &amp;K_1^{00}&lt;K_2^{10}\;or\;K_1^{01}&lt;K_2^{10}\;or\;K_1^{11}&lt;K_2^{10}\;or\;\\
+                                                                                        &amp;K_1^{00}&lt;K_2^{01}\;or\;K_1^{01}&lt;K_2^{01}\;or\;K_1^{11}&lt;K_2^{01}\;or\;\\
+                                                                                        &amp;K_1^{00}&lt;K_2^{11}\;or\;K_1^{01}&lt;K_2^{11}\;or\;K_1^{11}&lt;K_2^{11}\;or\;\\
+                                                                                        &amp;K_1^{00}&lt;K_2^{21}\;or\;K_1^{01}&lt;K_2^{21}\;or\;K_1^{11}&lt;K_2^{21}\\
+{\tt All(v1&lt;=v2[v1] &lt; v1&lt;=v2[v2])}\equiv\quad&amp;    K_1^{00}&lt;K_2^{00}\;and\;K_1^{01}&lt;K_2^{00}\;and\;K_1^{11}&lt;K_2^{00}\;and\;\\
+                                                                                        &amp;K_1^{00}&lt;K_2^{10}\;and\;K_1^{01}&lt;K_2^{10}\;and\;K_1^{11}&lt;K_2^{10}\;and\;\\
+                                                                                        &amp;K_1^{00}&lt;K_2^{01}\;and\;K_1^{01}&lt;K_2^{01}\;and\;K_1^{11}&lt;K_2^{01}\;and\;\\
+                                                                                        &amp;K_1^{00}&lt;K_2^{11}\;and\;K_1^{01}&lt;K_2^{11}\;and\;K_1^{11}&lt;K_2^{11}\;and\;\\
+                                                                                        &amp;K_1^{00}&lt;K_2^{21}\;and\;K_1^{01}&lt;K_2^{21}\;and\;K_1^{11}&lt;K_2^{21}\\
+\end{array}"/></p>
+</div></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="predicate-type-2-identities">
+<span id="appendixb-identities"></span><h2>5.2. Predicate Type 2: Identities<a class="headerlink" href="#predicate-type-2-identities" title="Permalink to this headline">¶</a></h2>
+<p>Identity constraints enforce some - or all - values of a set of parameters to be equal.</p>
+<blockquote>
+<div><p><strong>Syntax</strong></p>
+<pre>
+<strong id="grammar-token-identity">identity  </strong> ::=  <a class="reference internal" href="#grammar-token-quantifier"><tt class="xref docutils literal"><span class="pre">quantifier</span></tt></a> 'Identical(' <a class="reference internal" href="#grammar-token-parameter_reference"><tt class="xref docutils literal"><span class="pre">parameter_reference</span></tt></a> ')'
+<strong id="grammar-token-quantifier">quantifier</strong> ::=  ('All' | 'Some')
+</pre>
+<p><strong>Semantics</strong></p>
+<p>Let <img class="math" src="_images/math/958566f34f2665477b499f844cf2efbeae615cfa.png" alt="\{K_i^{c_1},K_i^{c_2},\dots,K_i^{c_r}\}"/> be the referenced parameters. Depending on the quantifier, the equivalent low-level constraints are:</p>
+<div class="math">
+<p><img src="_images/math/34dda91400b487c6496dd28f1415d815370f67b7.png" alt="\begin{array}{ll}
+\textrm{Quantifier}&amp;    \textrm{Low-level constraint}\\
+\hline\hline
+\textrm{All}:&amp;                  K_i^{c_1}=K_i^{c_2}\;and\;K_i^{c_2}=K_i^{c_3}\;and\;\dots\;and\;K_i^{c_{r-1}}=K_i^{c_r}\\
+\textrm{Some}:&amp;         K_i^{c_1}=K_i^{c_2}\;or\;\dots\;or\;K_i^{c_1}=K_i^{c_r}\;or\;K_i^{c_2}=K_i^{c_3}\;or\;\dots\;or\;K_i^{c_{r-1}}=K_i^{c_r}
+\end{array}"/></p>
+</div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: Let us consider the state formula <img class="math" src="_images/math/522e0db3780b71e4bce6aa86a2b73d63300bf3b5.png" alt="v_1\leq v_2"/>. The parameter reference for <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/> is: <img class="math" src="_images/math/f8572722cc5ab74bab4273b8fb722e22620f5d9f.png" alt="K_1[v_1\leq v_2]=\{K_1^{00}, K_1^{01}, K_1^{11}\}"/>. With the two quantifiers we can formulate two constraints. Their equivalent low-level constraints are:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/12a6b8bb2a41b0df66557b8051c749758baa39fc.png" alt="\begin{array}{ll}
+{\tt SomeIdentical(v1&lt;=v2[v1])}\equiv\quad K_1^{00}=K_1^{01}\;or\;K_1^{00}=K_1^{11}\;or\;K_1^{01}=K_1^{11}\\
+{\tt AllIdentical(v1&lt;=v2[v1])}\equiv\quad K_1^{00}=K_1^{01}\;and\;K_1^{01}=K_1^{11}
+\end{array}"/></p>
+</div></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="predicate-type-3-multiplexes">
+<span id="appendixb-multiplexes"></span><h2>5.3. Predicate Type 3: Multiplexes<a class="headerlink" href="#predicate-type-3-multiplexes" title="Permalink to this headline">¶</a></h2>
+<p>A multiplex constraint imposes a partition on the parameters of a specified component. Parameters in the same block of the partition <em>belong together</em> in the sense that they must all be equal. The partition is implicitly defined by specifying a list of state formulas, called <em>multiplexes</em> in this context. The procedure that achieves the partition of the parameters is then: For each state formula <img class="math" src="_images/math/0d679fd9e0eb60e30e2415e98559986854725131.png" alt="\psi_i^c"/> of a context of the specified component, compute the subset of the given state formulas that intersect <img class="math" src="_images/math/0d679fd9e0eb60e30e2415e98559986854725131.png" alt="\psi_i^c"/>. The blocks of the partition are then defined to consist of those Kinetic parameters that intersect the <em>same subset</em> of state formulas. For a publication on multiplexes see Section &#8220;Thomas’ Modelling with Multiplexes&#8221; in <a class="reference internal" href="bibliography.html#khalis09" id="id1">[Khalis09]</a>.</p>
+<blockquote>
+<div><p><strong>Syntax</strong></p>
+<pre>
+<strong id="grammar-token-multiplex">multiplex</strong> ::=  'Multiplex(' <a class="reference internal" href="appendixA.html#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a> {',' <a class="reference internal" href="appendixA.html#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a>} ':' <a class="reference internal" href="appendixA.html#grammar-token-component"><tt class="xref docutils literal"><span class="pre">component</span></tt></a> ')'
+</pre>
+<p><strong>Semantics</strong></p>
+<p>Let <img class="math" src="_images/math/bae956d02ff9423f7161d023cc86879494315e76.png" alt="\phi_1,\dots,\phi_p"/> be the given state formulas and <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/> the specified component. Let <img class="math" src="_images/math/16151ebcd2441a69bb4244989fee42b64234e38d.png" alt="\tau_1,\dots,\tau_{2^p}"/> be the <img class="math" src="_images/math/41b7cd57e52092050979e779475c42d2e24a95ae.png" alt="2^p"/> state formulas where <img class="math" src="_images/math/95a16e0e7eca5c1d2fccca164d779e2e52aef359.png" alt="\tau_i:\equiv\quad \phi_1'\;and\;\dots\;and\;\phi_p'"/> are all possible conjunctions of either <img class="math" src="_images/math/1d23af2e60e6fea2fc6200d594e03152e8c481ba.png" alt="\phi_i':\equiv\quad \phi_i"/> or <img class="math" src="_images/math/cb85286441d21539b6ba3a13a5119c4ee2ddb026.png" alt="\phi_i':\equiv\quad\;not\;\phi_i"/>. The equivalent of a <a class="reference internal" href="#grammar-token-multiplex"><tt class="xref std std-token docutils literal"><span class="pre">multiplex</span></tt></a> constraint in terms of <a class="reference internal" href="#grammar-token-identity"><tt class="xref std std-token docutils literal"><span class="pre">identity</span></tt></a> constraints is then:</p>
+<div class="math">
+<p><img src="_images/math/efcc227e42ceb255c0311363f32015c56798703f.png" alt="{\tt AllIdentical(\tau_1[v_i])\;and\;\dots\;and\;AllIdentical(\tau_{2^p}[v_i])}"/></p>
+</div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: Let us consider the multiplexes <img class="math" src="_images/math/0d4431d1cbb569f79c8c7380fc2b8b61c8e91c99.png" alt="\phi_1:\equiv\quad v1=1\;and\;v2=2"/> and <img class="math" src="_images/math/87530755149f6836cb691a19a6f3bbcf066334c4.png" alt="\phi_2:\equiv\quad v1=2"/>. With the following definitions of the state formulas <img class="math" src="_images/math/40910863fcf3c61f47ccd97d848463cacc2530f7.png" alt="\tau_i"/>:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/6e4e27c6765f4e0860c7ed209af561f56a5ae77c.png" alt="\begin{array}{l}
+\tau_1:\equiv\quad v1=1\;and\;v2=2, v1=2 : v_2\\
+\tau_2:\equiv\quad (not\;(v1=1\;and\;v2=2))\;and\;v1=2\\
+\tau_3:\equiv\quad v1=1\;and\;v2=2\;and\;(not\;v1=2)\\
+\tau_4:\equiv\quad (not\;(v1=1\;and\;v2=2))\;and\;(not\;v1=2)\\
+\end{array},"/></p>
+</div></div></blockquote>
+<p>the equivalent of the <a class="reference internal" href="#grammar-token-multiplex"><tt class="xref std std-token docutils literal"><span class="pre">multiplex</span></tt></a> constraint in terms of <a class="reference internal" href="#grammar-token-identity"><tt class="xref std std-token docutils literal"><span class="pre">identity</span></tt></a> constraints is:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/ef1cae3a6c6d8f8f25d236a6270b4193de70c8cd.png" alt="{\tt Multiplex(v1=1\;and\;v2=2, v1=2 : v_2)\equiv\quad AllIdentical(\tau_1[v_2])\;and\;\dots\;and\;AllIdentical(\tau_4[v_2])}"/></p>
+</div></div></blockquote>
+<p>To compute the equivalent low-level constraint, we need the partition of the kinetic parameters of <img class="math" src="_images/math/e3c09383f52ff7db11358e4aa6ca6c0307b02d76.png" alt="v_2"/>. To compute the partition, we need to list for every parameter formula <img class="math" src="_images/math/f0ecb66e0b5222552770c4625b77302782c3d672.png" alt="\psi_2^c"/> those multiplexes that intersect its states:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/871dd92995f242a95b21088e3537f62f08614f01.png" alt="\begin{array}{lccc}
+\textrm{Parameters of }v_2&amp;\textrm{Context states}&amp;     \textrm{Intersection with }\phi_1&amp;              \textrm{Intersection with }\phi_2\\
+\hline\hline
+K_2^{00}&amp;                               \{00,01\}&amp;                                      \emptyset&amp;                                                              \emptyset\\
+K_2^{01}&amp;                               \{02\}&amp;                                         \emptyset&amp;                                                              \emptyset\\
+K_2^{10}&amp;                               \{10,11\}&amp;                                      \emptyset&amp;                                                              \emptyset\\
+K_2^{11}&amp;                               \{12\}&amp;                                         \{12\}&amp;                                                                 \emptyset\\
+K_2^{20}&amp;                               \{21,20\}&amp;                                      \emptyset&amp;                                                              \{21,20\}\\
+K_2^{21}&amp;                               \{22\}&amp;                                         \emptyset&amp;                                                              \{22\}
+\end{array}"/></p>
+</div></div></blockquote>
+<p>In this case we have a partition into 3 blocks: Those parameters that do no intersect either state formula, i.e., <img class="math" src="_images/math/a35fbcc2958232ffe5046069b23fa9bb78b213d2.png" alt="\{K_2^{00},K_2^{01},K_2^{10}\}"/>, those that only intersect <img class="math" src="_images/math/c2629893cf0303c8874002b5502fc0c5f521810d.png" alt="\phi_1"/>, i.e., <img class="math" src="_images/math/7826e634b4fa7b7064e7846742d5def7b9379d4f.png" alt="\{K_2^{11}\}"/>, and those that only intersect <img class="math" src="_images/math/c0ba5c0fcdce14a69a2b0b877fb25f89d8c007ec.png" alt="\phi_2"/>, i.e., <img class="math" src="_images/math/8dd5cafa6ef86e207be0d83e41257a5226e07047.png" alt="\{K_2^{20},K_2^{21}\}"/>. There are no parameters that intersect both. The equivalent low-level constraints is therefore:</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/a8b7793d4afdc080b31ab523e1ef6cdfa427996a.png" alt="{\tt Multiplex(v1=1\;and\;v2=2, v1=2 : v_2)}\equiv\quad K_2^{00}=K_2^{01}\;and\;K_2^{01}=K_2^{10}\;and\;K_2^{20}=K_2^{21}"/></p>
+</div></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="predicate-type-4-edge-labels">
+<span id="appendixb-edge-labels"></span><h2>5.4. Predicate Type 4: Edge Labels<a class="headerlink" href="#predicate-type-4-edge-labels" title="Permalink to this headline">¶</a></h2>
+<p>Edge labels constrain the effect, that a regulator has on its target. With <em>circuit functionality</em>, they were one of the first constraints to be considered by Thomas and Thieffry and are essential to the <em>Thomas conjectures</em> about feedback loops and attractors in the transition graph. Originally, the labels enforced a <em>monotonicity</em> in the target values (see for example Def. 4 and Sec. 5 in <a class="reference internal" href="bibliography.html#bernot04" id="id2">[Bernot04]</a>). Later, <em>observability</em> was added to the edge label constraints (see Sec. 4.2 in <a class="reference internal" href="bibliography.html#richard05" id="id3">[Richard05]</a>).</p>
+<blockquote>
+<div><p><strong>Syntax</strong></p>
+<pre>
+<strong id="grammar-token-edge_label">edge_label</strong> ::=  <a class="reference internal" href="#grammar-token-label"><tt class="xref docutils literal"><span class="pre">label</span></tt></a> '(' <a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a> ',' <a class="reference internal" href="section1.html#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a> , <a class="reference internal" href="section1.html#grammar-token-threshold"><tt class="xref docutils literal"><span class="pre">threshold</span></tt></a> [',' <a class="reference internal" href="appendixA.html#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a>] ')'
+<strong id="grammar-token-label">label     </strong> ::=  'Observable' | (('Activating' | 'Inhibiting') ['Only'])
+</pre>
+<p><strong>Semantics</strong></p>
+<p>Let <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/> be the regulator (the first <em>name</em> argument), <img class="math" src="_images/math/42628ab5952aa041b3649af187c7f256cfb4fe9d.png" alt="v_j"/> be the target (the second <em>name</em> argument),
+<img class="math" src="_images/math/e89582ca19bf2b8dd7aee99ab4e0832f08510bd7.png" alt="t\in\theta(v_iv_j)"/> be a threshold of the interaction <img class="math" src="_images/math/83354070aa6cd038f9f7bc3b005cc4c7b2bbe055.png" alt="v_iv_j"/> and <img class="math" src="_images/math/2c175f60eecef1de7560c3bdea495d69f26f719d.png" alt="\phi"/> be a state formula of an <a class="reference internal" href="#grammar-token-edge_label"><tt class="xref std std-token docutils literal"><span class="pre">edge_label</span></tt></a> constraint. If the optional state formula is omitted, it is taken to be <img class="math" src="_images/math/db644fb348b9999361803a55862fc55a75636508.png" alt="True"/>. Let</p>
+<div class="math">
+<p><img src="_images/math/bf0ce6902c93a19e7127bc8cdcd0983cce6facb8.png" alt="K_j[\phi\;and\;v_i=t]:=\{K_j^{c_1},K_j^{c_2},\dots,K_j^{c_r}\}"/></p>
+</div><p>be the parameters of <img class="math" src="_images/math/42628ab5952aa041b3649af187c7f256cfb4fe9d.png" alt="v_j"/>, referenced by <img class="math" src="_images/math/72db28548d231eeec3b9e363b5bd1b91e6510dbc.png" alt="\phi\;and\;v_i=t"/>. For each context <img class="math" src="_images/math/1e95be43c04d6869c67861aae1e3e69123fedd8c.png" alt="c_i"/> we denote by <img class="math" src="_images/math/0cbe5b29459dccee88f23691ff4f5d8d06e4cfab.png" alt="c_i'"/> the unique context obtained from <img class="math" src="_images/math/1e95be43c04d6869c67861aae1e3e69123fedd8c.png" alt="c_i"/> by lowering the intensity of the interaction <img class="math" src="_images/math/83354070aa6cd038f9f7bc3b005cc4c7b2bbe055.png" alt="v_iv_j"/> by one. (Recall that a context is a tuple consisting of <a class="reference internal" href="appendixA.html#appendixa-interaction-intensities"><em>interaction intensities</em></a>).</p>
+<p>The low-level equivalent of the edge labels <em>Activating</em> and <em>Inhibiting</em> are then defined by:</p>
+<div class="math">
+<p><img src="_images/math/8d09467bbac7426e320d806bba9870d0bc6a1794.png" alt="\begin{array}{l&#64;{\quad:\quad}l}
+\textrm{Label}&amp;                 \textrm{Low-level constraint}\\
+\hline\hline
+\textrm{Activating}&amp;    K_j^{c_1}&gt;K_j^{c_1'}\;or\;K_j^{c_2}&gt;K_j^{c_2'}\;or\;\dots\;or\;K_j^{c_r}&gt;K_j^{c_r'}\\
+\textrm{Inhibiting}&amp;    K_j^{c_1}&lt;K_j^{c_1'}\;or\;K_j^{c_2}&lt;K_j^{c_2'}\;or\;\dots\;or\;K_j^{c_r}&lt;K_j^{c_r'}\\
+\end{array}"/></p>
+</div><p>The other edge labels are convenient shortcuts for logical combinations of <em>Activating</em> and <em>Inhibiting</em>:</p>
+<div class="math">
+<p><img src="_images/math/4e3cf2fb55420b36810c4fd049f298490d340b34.png" alt="\begin{array}{ll}
+\textrm{Label}&amp;                 \textrm{Equivalent constraint}\\
+\hline\hline
+\textrm{Observable}&amp;    \textrm{Activating}\;or\;\textrm{Inhibiting}\\
+\textrm{ActivatingOnly}&amp;\textrm{Activating}\;and\;not\;\textrm{Inhibiting}\\
+\textrm{InhibitingOnly}&amp;\textrm{Inhibiting}\;and\;not\;\textrm{Activating}\\
+\end{array}"/></p>
+</div><p>The optional state formula restricts the referenced parameters. With it we can control <em>where in state space</em> we want to see the interaction effect.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: Let us consider a couple of examples.</p>
+<p>First an example without a state formula: <img class="math" src="_images/math/e359c4eabed073c68ca89da7c108a02b4bcbc3de.png" alt="{\tt Activating(v_1, v_2, 1)}"/>.
+The referenced parameters are <img class="math" src="_images/math/0c1034523ddd4345a0253b641eea86a6324ebde0.png" alt="K_2[True\;and\;v_1=1]=\{K_2^{10},K_2^{11}\}"/>.
+The equivalent low-level constraint is therefore:</p>
+<div class="math">
+<p><img src="_images/math/abf6ed7e50caa55d87b268da94e16089b26f0dbc.png" alt="{\tt Activating(v_1, v_2, 1)}\equiv\quad K_2^{10}&gt;K_2^{00}\;or\;K_2^{11}&gt;K_2^{01}."/></p>
+</div><p>Now an example with a state formula: <img class="math" src="_images/math/5d5054484311a799ce5e9197493bfe1d7f2a4c17.png" alt="{\tt Inhibiting(v_2, v_2, 2, v_1&gt;0)}"/>.
+The referenced parameters are <img class="math" src="_images/math/9950f7c2921ede50cbe4914d378e4b732c68913d.png" alt="K_2[v_1&gt;0\;and\;v_2=2]=\{K_2^{11},K_2^{21}\}"/>.
+The equivalent low-level constraint is therefore:</p>
+<div class="math">
+<p><img src="_images/math/5af4641e3535a048b9d07acf5545cce5ad347312.png" alt="{\tt Inhibiting(v_2, v_2, 2, v_1&gt;0)}\equiv\quad K_2^{11}&lt;K_2^{10}\;or\;K_2^{21}&lt;K_2^{20}."/></p>
+</div><p>Finally an example of a convenience edge label: <img class="math" src="_images/math/1a6740a568581dd1f366c46a094f789b9517247d.png" alt="{\tt Observable(v_2, v_1, 1, v_1&gt;0)}"/></p>
+<div class="math">
+<p><img src="_images/math/f6f2b44d6ddfae2d81066ab2cce5404008544e9a.png" alt="{\tt Observable(v_2, v_1, 1, v_1&gt;0)\equiv\quad Activating(v_2, v_1, 1, v_1&gt;0)\;or\;Inhibiting(v_2, v_1, 1, v_1&gt;0)}."/></p>
+</div></div></blockquote>
+</div>
+<div class="section" id="predicate-type-5-subgraphs">
+<span id="appendixb-subgraphs"></span><h2>5.5. Predicate Type 5: Subgraphs<a class="headerlink" href="#predicate-type-5-subgraphs" title="Permalink to this headline">¶</a></h2>
+<p>These constraints enforce the existence of a subgraph in the <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>asynchronous state transition graph</em></a>. We have implemented a general <a class="reference internal" href="#grammar-token-subgraph"><tt class="xref std std-token docutils literal"><span class="pre">subgraph</span></tt></a> and a <a class="reference internal" href="#grammar-token-path"><tt class="xref std std-token docutils literal"><span class="pre">path</span></tt></a> predicate.</p>
+<blockquote>
+<div><p><strong>Syntax</strong></p>
+<pre>
+<strong id="grammar-token-subgraph">subgraph   </strong> ::=  'ContainsSubgraph(' <a class="reference internal" href="#grammar-token-transitions"><tt class="xref docutils literal"><span class="pre">transitions</span></tt></a> {',' <a class="reference internal" href="#grammar-token-transitions"><tt class="xref docutils literal"><span class="pre">transitions</span></tt></a>})'
+<strong id="grammar-token-transitions">transitions</strong> ::=  <a class="reference internal" href="#grammar-token-state"><tt class="xref docutils literal"><span class="pre">state</span></tt></a> ': [' <a class="reference internal" href="#grammar-token-states"><tt class="xref docutils literal"><span class="pre">states</span></tt></a> ']
+<strong id="grammar-token-path">path       </strong> ::=  'ContainsPath(' <a class="reference internal" href="#grammar-token-states"><tt class="xref docutils literal"><span class="pre">states</span></tt></a> ')'
+<strong id="grammar-token-states">states     </strong> ::=  <a class="reference internal" href="#grammar-token-state"><tt class="xref docutils literal"><span class="pre">state</span></tt></a> {',' <a class="reference internal" href="#grammar-token-state"><tt class="xref docutils literal"><span class="pre">state</span></tt></a>}
+<strong id="grammar-token-state">state      </strong> ::=  <a class="reference internal" href="#grammar-token-activity"><tt class="xref docutils literal"><span class="pre">activity</span></tt></a> {<a class="reference internal" href="#grammar-token-activity"><tt class="xref docutils literal"><span class="pre">activity</span></tt></a>}
+<strong id="grammar-token-activity">activity   </strong> ::=  0 | 1 | ...
+</pre>
+<p><strong>Semantics</strong></p>
+<p><em>Subgraph</em>: We use the successor-based description of directed graphs as an argument for the <a class="reference internal" href="#grammar-token-subgraph"><tt class="xref std std-token docutils literal"><span class="pre">subgraph</span></tt></a> constraint.
+A transition therefore consists of a tail <a class="reference internal" href="#grammar-token-state"><tt class="xref std std-token docutils literal"><span class="pre">state</span></tt></a>, followed by a semicolon and a list of successor states. We denote a state by a tuple of activities, given in concise notation without brackets or commata, where the <img class="math" src="_images/math/ffbd55597272a9914166c5dd1e71a5d23d842ddd.png" alt="i^{th}"/> activity refers to component <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/>.</p>
+<p>An <em>example</em> of the syntax of a successor-based description of the 3 unitary and asynchronous transitions <img class="math" src="_images/math/cf53ebbb48702d83fc874b9c3b4560a44e31b052.png" alt="\{(01002,11002),(01002,01102),(01002,01003)\}"/> is:</p>
+<div class="math">
+<p><img src="_images/math/d30bd5d8873b9c10d63a2c45e2213a7f365e4d0c.png" alt="01002 : [11002,01102,01003]"/></p>
+</div><p>We denote the state formula referencing a single state <img class="math" src="_images/math/e789763cfcc6a3688812b3660fda9b6d9cc80a4c.png" alt="x\in X"/> by</p>
+<div class="math">
+<p><img src="_images/math/0357379251f856f75b38b534a0698d15275061fa.png" alt="\phi_x:\equiv\quad v_1=x_1\;and\;\dots\;and\;v_n=x_n."/></p>
+</div><p>For every transition <img class="math" src="_images/math/2bc48f87bc6c4fce6b7b4eb0df795e733da94451.png" alt="(x,y)\in T"/> of an asynchronous state transition graph <img class="math" src="_images/math/b18eb1f3052ce98c9182b9ca69451daef4b7bb08.png" alt="(X,T)"/>, there is a unique index <img class="math" src="_images/math/2249dba2b9cc51538a37a6fb439f722dd96c2071.png" alt="k(x,y)"/>, such that <img class="math" src="_images/math/f4a9c98e1b706c25ee8da0b07976c83c96667de0.png" alt="x_k\neq y_k"/>.
+For each tail state <img class="math" src="_images/math/e789763cfcc6a3688812b3660fda9b6d9cc80a4c.png" alt="x\in X"/> and each of its successors <img class="math" src="_images/math/4e834687f0afe677a1ccd6291bc01c57c054e0dc.png" alt="y\in X"/> there is a unique index <img class="math" src="_images/math/2249dba2b9cc51538a37a6fb439f722dd96c2071.png" alt="k(x,y)"/>, such that <img class="math" src="_images/math/f4a9c98e1b706c25ee8da0b07976c83c96667de0.png" alt="x_k\neq y_k"/>. The single parameter that causes the transition is therefore <img class="math" src="_images/math/3336ac49ff678bc2c596eb0baef889fffb355ffb.png" alt="K_k[\phi_x]=\{K_k^c\}"/>. If <img class="math" src="_images/math/bfd413528ddfa5211eb435a75c84b580c25a7dee.png" alt="x_k&lt;y_k"/> we enforce the low-level constraint:</p>
+<div class="math">
+<p><img src="_images/math/c4ac4b96871fe101499a3cff98662e5b96770e03.png" alt="K_k^c&gt;x_k"/></p>
+</div><p>Otherwise, if <img class="math" src="_images/math/95bc3962f46c9f81a7ff7a964b7dc16e4dc3045c.png" alt="x_k&gt;y_k"/> we enforce the low-level constraint:</p>
+<div class="math">
+<p><img src="_images/math/d6cf9a219f632b1ae6d89d0528bf4471e5702769.png" alt="K_k^c&lt;x_k"/></p>
+</div><p><em>Path</em>: A <a class="reference internal" href="#grammar-token-path"><tt class="xref std std-token docutils literal"><span class="pre">path</span></tt></a> constraint is just a special case of a <a class="reference internal" href="#grammar-token-subgraph"><tt class="xref std std-token docutils literal"><span class="pre">subgraph</span></tt></a> constraint with simplified syntax, i.e., by just passing a comma seperated list of the path states in sequence to the predicate.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: If we want to make sure that the transitions <img class="math" src="_images/math/b9e2513265f8d0bd61ac470e7709b0837fd60c0f.png" alt="\{(00,01),(00,10),(10,00)\}"/> are contained in the transition graph of a model, we enforce the constraint <img class="math" src="_images/math/bf2f9210909408cef5ab0a71c8381de689bf4198.png" alt="{\tt ContainsSubgraph(00:[01,10],10:[00])}"/>. The equivalent low-level constraint is:</p>
+<div class="math">
+<p><img src="_images/math/aaa1a46b747bbd1a03c8b699ec7ac76d02fe8c89.png" alt="{\tt ContainsSubgraph(00:[01,10],10:[00])}\equiv\quad K_1^{00}&gt;0\;and\;K_2^{00}&gt;0\;and\;K_1^{10}&lt;1"/></p>
+</div><p>The low-level equivalent of a <a class="reference internal" href="#grammar-token-path"><tt class="xref std std-token docutils literal"><span class="pre">path</span></tt></a> constraint, for the existence of the path <img class="math" src="_images/math/ebdd69936f49308c01e54477ba3409210b16fb95.png" alt="(00,10,00)"/> in the transition graph, is:</p>
+<div class="math">
+<p><img src="_images/math/0b118ff129c081ef339e03e14ef3dba13d519958.png" alt="{\tt ContainsPath(00,10,00)}\equiv\quad K_1^{00}&gt;0\;and\;K_1^{10}&lt;1"/></p>
+</div></div></blockquote>
+</div>
+<div class="section" id="predicate-type-6-comparisons">
+<span id="appendixb-comparisons"></span><h2>5.6. Predicate Type 6: Comparisons<a class="headerlink" href="#predicate-type-6-comparisons" title="Permalink to this headline">¶</a></h2>
+<p>The comparison predicate is different to the other constraints, defined above, in that it requires the specification of a particular parametrization. It is therefore not applicable to <a class="reference internal" href="section1.html"><em>Section 1: Initial Parametrizations</em></a>. Instead, it is included especially for the <a class="reference internal" href="section2.html#section2-custom-classifier"><em>custom classifiers</em></a> of <a class="reference internal" href="section2.html"><em>Section 2: Classifying</em></a>. During the classification loop, a particular parametrization <img class="math" src="_images/math/4b4cade9ca8a2c8311fafcf040bc5b15ca507f52.png" alt="P"/> is retrieved from the model database. A <a class="reference internal" href="#grammar-token-compare"><tt class="xref std std-token docutils literal"><span class="pre">compare</span></tt></a> constraint is similar to a <a class="reference internal" href="#grammar-token-inequality_abs"><tt class="xref std std-token docutils literal"><span class="pre">inequality_abs</span></tt></a> constraint. Instead of specifying a constant number for the right-hand side of the inequalities, the corresponding target values of the given parametrization <img class="math" src="_images/math/4b4cade9ca8a2c8311fafcf040bc5b15ca507f52.png" alt="P"/> are substituted.</p>
+<blockquote>
+<div><p><strong>Syntax</strong></p>
+<pre>
+<strong id="grammar-token-compare">compare</strong> ::=  <a class="reference internal" href="#grammar-token-quantifier"><tt class="xref docutils literal"><span class="pre">quantifier</span></tt></a> 'Compare(' <a class="reference internal" href="#grammar-token-parameter_reference"><tt class="xref docutils literal"><span class="pre">parameter_reference</span></tt></a> ':' <a class="reference internal" href="#grammar-token-operator"><tt class="xref docutils literal"><span class="pre">operator</span></tt></a> ')'
+</pre>
+<p><strong>Semantics</strong></p>
+<p>Let <img class="math" src="_images/math/4b4cade9ca8a2c8311fafcf040bc5b15ca507f52.png" alt="P"/> be the specified parametrization, <img class="math" src="_images/math/958566f34f2665477b499f844cf2efbeae615cfa.png" alt="\{K_i^{c_1},K_i^{c_2},\dots,K_i^{c_r}\}"/> be the referenced parameters and <img class="math" src="_images/math/0b8cb28f306e3c60a329df5fdc0fb6b4b0e0465e.png" alt="\star\in\{&lt;,\leq,=,\geq,&gt;,\neq\}"/> the given operator. Depending on the <a class="reference internal" href="#grammar-token-quantifier"><tt class="xref std std-token docutils literal"><span class="pre">quantifier</span></tt></a>, the low-level equivalent of a <a class="reference internal" href="#grammar-token-compare"><tt class="xref std std-token docutils literal"><span class="pre">compare</span></tt></a> constraint is:</p>
+<div class="math">
+<p><img src="_images/math/991ee05938188dae05fb703ecff0718b83277f1c.png" alt="\begin{array}{ll}
+\textrm{Quantifier}&amp;    \textrm{Low-level constraint}\\
+\hline\hline
+\textrm{All}&amp;                   K_i^{c_1}\star P_i^{c_1}\;and\;K_i^{c_2}\star P_i^{c_2}\;and\;\dots\;and\;K_i^{c_r}\star P_i^{c_r}\\
+\textrm{Some}&amp;                  K_i^{c_1}\star P_i^{c_1}\;and\;K_i^{c_2}\star P_i^{c_2}\;and\;\dots\;and\;K_i^{c_r}\star P_i^{c_r}
+\end{array}"/></p>
+</div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: Suppose the specified parametrization is:</p>
+<div class="math">
+<p><img src="_images/math/55268a2cbaf5cfc0bb2346efa032c4c598cb2ea8.png" alt="P_1^{00}=0,P_1^{01}=1,P_1^{10}=2,P_1^{11}=0,P_2^{00}=2,P_2^{01}=1,P_2^{10}=1,P_2^{11}=0,P_2^{20}=2,P_2^{21}=0."/></p>
+</div><p>Here are two examples of a <a class="reference internal" href="#grammar-token-compare"><tt class="xref std std-token docutils literal"><span class="pre">compare</span></tt></a> constraint:</p>
+<div class="math">
+<p><img src="_images/math/c23fc637e624ef41256f26f45d89077d1ea644be.png" alt="\begin{array}{l}
+{\tt AllCompare(v_1=2[v_2]:\;=)}\equiv\quad K_2^{20}=2\;and\;K_2^{21}=0\\
+{\tt SomeCompare(True[v_1]:\;\neq)}\equiv\quad K_1^{00}\neq0\;or\;K_1^{01}\neq1\;or\;K_1^{10}\neq2\;or\;K_1^{11}\neq0
+\end{array}"/></p>
+</div></div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. Appendix B: Parameter Constraint Language</a><ul>
+<li><a class="reference internal" href="#predicate-type-1-inequalities">5.1. Predicate Type 1: Inequalities</a></li>
+<li><a class="reference internal" href="#predicate-type-2-identities">5.2. Predicate Type 2: Identities</a></li>
+<li><a class="reference internal" href="#predicate-type-3-multiplexes">5.3. Predicate Type 3: Multiplexes</a></li>
+<li><a class="reference internal" href="#predicate-type-4-edge-labels">5.4. Predicate Type 4: Edge Labels</a></li>
+<li><a class="reference internal" href="#predicate-type-5-subgraphs">5.5. Predicate Type 5: Subgraphs</a></li>
+<li><a class="reference internal" href="#predicate-type-6-comparisons">5.6. Predicate Type 6: Comparisons</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="appendixA.html"
+                        title="previous chapter">4. Appendix A: Finite Dynamical Systems</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="appendixC.html"
+                        title="next chapter">6. Appendix C: Case Studies</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/appendixB.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="appendixC.html" title="6. Appendix C: Case Studies"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="appendixA.html" title="4. Appendix A: Finite Dynamical Systems"
+             >previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, H. Klarner, S. Meiers, M. Seeger, J. Tackmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

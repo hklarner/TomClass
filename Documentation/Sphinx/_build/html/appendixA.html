@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Appendix A: Finite Dynamical Systems &mdash; Enumerator Tool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Enumerator Tool 1.0 documentation" href="index.html" />
+    <link rel="next" title="5. Appendix B: Parameter Constraint Language" href="appendixB.html" />
+    <link rel="prev" title="3. Section 3: Analysis" href="section3.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="appendixB.html" title="5. Appendix B: Parameter Constraint Language"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="section3.html" title="3. Section 3: Analysis"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="appendix-a-finite-dynamical-systems">
+<h1>4. Appendix A: Finite Dynamical Systems<a class="headerlink" href="#appendix-a-finite-dynamical-systems" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="background-finite-dynamical-systems">
+<span id="appendixa-background"></span><h2>4.1. Background: Finite Dynamical Systems<a class="headerlink" href="#background-finite-dynamical-systems" title="Permalink to this headline">¶</a></h2>
+<p>Finite dynamical systems consist of a finite set <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>, called <em>state space</em>, and a function <img class="math" src="_images/math/029e728bc468a2cc3ebea7b91e3d7fecf3207bef.png" alt="f:X\rightarrow X"/>, called <em>update function</em>. For any state <img class="math" src="_images/math/e789763cfcc6a3688812b3660fda9b6d9cc80a4c.png" alt="x\in X"/> we can then study the trajectory <img class="math" src="_images/math/f2f9c7349a41ea4da229269196bede37c96a3915.png" alt="x,f(x),f^2(x),f^3(x),\dots"/> that unfolds by the given function. An immediate observation is that, since <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> is finite, every trajectory is finite in the sense that it must end in a cycle of some length <img class="math" src="_images/math/c779d0ba2c47e7587d30a6d8c860c8d24603fa32.png" alt="k\geq 1"/>, where cycles of length 1 are called <em>steady states</em> and cycles of length at least 2 are called <em>cyclic attractors</em>. The union of steady states and cyclic attractors makes the set of <em>attractors</em> of the system <img class="math" src="_images/math/81b90d50d32491f9f23269c30410f9f39e2061de.png" alt="(X,f)"/>. Of course, the trajectories of two different states may end up in the same attractor. It is therefore not easy to predict how many different attractors there are in a given system.</p>
+<p>In 1969 Stuart Kauffman published a study that applied finite dynamical systems ideas to modelling the dynamics of gene regulatory networks (see <a class="reference internal" href="bibliography.html#kauffman69" id="id1">[Kauffman69]</a>).
+Kauffman modelled gene products with Boolean variables, that encode whether the respective product is present or not. Regulatory effects were abstracted to Boolean functions that calculate the state of a product from the state of its regulators.
+Kauffman computed trajectories of randomly generated Boolean networks and counted the number of different attractors. His findings suggest that there are roughly as many attractors in a Boolean network of <img class="math" src="_images/math/174fadd07fd54c9afe288e96558c92e0c1da733a.png" alt="n"/> variables, as there are different cell types in an organism with a genome consisting of <img class="math" src="_images/math/174fadd07fd54c9afe288e96558c92e0c1da733a.png" alt="n"/> genes.</p>
+<p>The particular difficulty one faces when modelling regulatory networks is that the function <img class="math" src="_images/math/bb2c93730dbb48558bb3c4738c956c4e8f816437.png" alt="f"/> is not known. Instead, a graph structure underlying the function is assumed, usually obtained by reverse engineering techniques, and the set of functions that is compatible with the graph structure is considered feasible. In the following sections we discuss the graph structure, called <em>regulatory graph</em>, the set of functions that are compatible, called the <em>parametrizations of a regulatory graph</em> and the <em>asynchronous and unitary</em> update stategy, that is used to describe the dynamics, i.e., the <em>state transition graph</em> of a parametrization.</p>
+<blockquote>
+<div><p><strong>Table of contents of Appendix A</strong></p>
+<ul class="simple">
+<li><a class="reference internal" href="#appendixa-reg-graphs"><em>Regulatory graphs</em></a></li>
+<li><a class="reference internal" href="#appendixa-state-space"><em>State space and state formulas</em></a></li>
+<li><a class="reference internal" href="#appendixa-parametrizations"><em>Parametrizations</em></a></li>
+<li><a class="reference internal" href="#appendixa-async-dynamics"><em>Asynchronous dynamics</em></a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="regulatory-graphs">
+<span id="appendixa-reg-graphs"></span><h2>4.2. Regulatory graphs<a class="headerlink" href="#regulatory-graphs" title="Permalink to this headline">¶</a></h2>
+<p>The components <img class="math" src="_images/math/830e272906f4f4e1fd8751225df7d9215725ff06.png" alt="V=\{v_1,\dots,v_n\}"/> that are involved in a regulatory network and their dependecies
+can be captured in directed graph <img class="math" src="_images/math/941eda8fcafc404b5fa627eb03bcb062f051e73e.png" alt="(V,E)"/>. An arc <img class="math" src="_images/math/c31501a6aa94bce66618ec1f534de5f41b041e6f.png" alt="v_iv_j\in E\subseteq V\times V"/> is called an interaction.
+The predecessors <img class="math" src="_images/math/b7edc7cfb2ef6c04c25102aedd9596ca4007886f.png" alt="N^-(v_i):=\{v_j\in V\;|\; v_jv_i\in E\}"/> are called regulators of <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/>, and its successors <img class="math" src="_images/math/43d7c3c99c9c47f21377f93df6c358b4d5db3712.png" alt="N^+(v_i)"/>
+are called targets of <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/>.</p>
+<blockquote>
+<div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: As a running example, consider the complete graph of two components <img class="math" src="_images/math/1ef9f5cc37fdaa3300b107f6c89ac39bbaa26520.png" alt="V=\{v_1,v_2\}"/>:</p>
+<a class="reference internal image-reference" href="_images/appendix_A_01.jpg"><img alt="_images/appendix_A_01.jpg" class="align-center" src="_images/appendix_A_01.jpg" style="width: 206.0px; height: 68.5px;" /></a>
+</div></blockquote>
+<p>Since we are not only interested in the structure of the network but also in
+its dynamics, we interpret the components as integer variables whose values signify
+the level of activity, e.g. the concentration level, of the corresponding substance.
+Naturally, the impact a regulator has on its target depends on the regulators activity.
+To define a model of the networks dynamics we therefore have to specify a set of activity levels for each component, and interaction thresholds, that allow us to distinguish the effects that a regulator has on its target.
+Since we are interested in finite dynamical systems, every component must have a maximal activity level and all interaction thresholds originating in it must lie below that maximal value.
+This leads to the following definition:</p>
+<blockquote>
+<div><p><strong>Regulatory graph</strong></p>
+<p>A regulatory graph <img class="math" src="_images/math/6244cd0560ca04356898adab9cd4b0b2e2b534fd.png" alt="\mathcal R=(V,E,\rho,\theta)"/> consists of components <img class="math" src="_images/math/12d58aa29201da09d8e620f8698e3a37547f6b4a.png" alt="V"/>, interactions <img class="math" src="_images/math/fa2fa899f0afb05d6837885523503a2d4df434f9.png" alt="E"/> and
+two functions <img class="math" src="_images/math/0027034d8a10372a06deaf4f4084c01956587479.png" alt="\rho"/> and <img class="math" src="_images/math/52e8ed7a3ba22130ad3984eb2cd413406475a689.png" alt="\theta"/>.
+The function <img class="math" src="_images/math/f2f2b46a005c8ee034cc7ed39db7e52a26726e40.png" alt="\rho : V \rightarrow \mathbb N_1"/> assigns a non-zero number <img class="math" src="_images/math/fe929759844c242682e620a557bf2be3ce3605c7.png" alt="\rho(v_i)"/>,
+called <em>maximal activity level</em> of <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/>, to each component.
+The other function, <img class="math" src="_images/math/52e8ed7a3ba22130ad3984eb2cd413406475a689.png" alt="\theta"/>, assigns interaction thresholds <img class="math" src="_images/math/9c52a53d5800a031c4dcca198c88faab1f0fe380.png" alt="\theta(v_iv_j)=(t_1,\dots,t_m)"/> to each interaction <img class="math" src="_images/math/24702f8cc831786dc91849dfd89f7e5911f865fd.png" alt="v_iv_j\in E"/>.
+The thresholds must be ordered: <img class="math" src="_images/math/5908e38e87fe0cc5cde16a69f0831e5f3208d722.png" alt="t_1&lt;\dots&lt; t_m"/> and within the set of non-zero activities of the regulator:
+<img class="math" src="_images/math/69a04e1e2a77d8c07f30e06200b7504f678e2fcb.png" alt="1\leq t_1"/> and <img class="math" src="_images/math/a24738445a61b72f09bd2521334ae0258951e5d7.png" alt="t_m\leq\rho(v_i)"/>.</p>
+</div></blockquote>
+<p>We call <img class="math" src="_images/math/f5047d1e0cbb50ec208923a22cd517c55100fa7b.png" alt="m"/> the multiplicity of the interaction, a concept first introduced in Section 2 of <a class="reference internal" href="bibliography.html#chaouiya03" id="id2">[Chaouiya03]</a>.
+The condition that thresholds must be greater than 0 is required,
+because we want regulators to be able to fall below each of their interaction thresholds.
+Although there is no restriction on the value of the maximal activity of a component, it is common to choose a value which is at most equal to the number of targets of that component.
+A component that has two targets does therefore not usually have a maximal activity level equal to 3.</p>
+<blockquote id="appendixa-running-example">
+<div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: We choose the thresholds and maximal activities to be</p>
+<div class="math">
+<p><img src="_images/math/dc128da96be275e90abcbd2c65467f281b320872.png" alt="\begin{array}{llll}
+\rho(v_1)=&amp;2&amp;\theta(v_1v_1)=&amp;(1)\\
+\rho(v_2)=&amp;2&amp;\theta(v_1v_2)=&amp;(1,2)\\
+&amp;&amp;\theta(v_2v_1)=&amp;(1)\\
+&amp;&amp;\theta(v_2v_2)=&amp;(2)
+\end{array}."/></p>
+</div><p>In the drawing of the regulatory graph, we label nodes with component name and activity interval, and interactions with thresholds:</p>
+<a class="reference internal image-reference" href="_images/appendix_A_02.jpg"><img alt="_images/appendix_A_02.jpg" class="align-center" src="_images/appendix_A_02.jpg" style="width: 205.5px; height: 81.0px;" /></a>
+</div></blockquote>
+</div>
+<div class="section" id="state-space-and-state-formulas">
+<span id="appendixa-state-space"></span><h2>4.3. State space and state formulas<a class="headerlink" href="#state-space-and-state-formulas" title="Permalink to this headline">¶</a></h2>
+<p>To a regulatory graph <img class="math" src="_images/math/71b1d4863ff0b5eadb4bca7ad84560c55f63976c.png" alt="\mathcal R"/> we associate the state space</p>
+<div class="math">
+<p><img src="_images/math/06a2850fad81b4d87bb6042c7af17211f14f30e7.png" alt="X:=\prod_{i=1}^n[0..\rho(v_i)]."/></p>
+</div><p>An element <img class="math" src="_images/math/e789763cfcc6a3688812b3660fda9b6d9cc80a4c.png" alt="x\in X"/> is called a state of the regulatory graph and we use the
+subscript notation <img class="math" src="_images/math/67bc6daa9d6b964201d6cef60cbeb1ac5fd26ead.png" alt="x_i"/> to denote the activity of <img class="math" src="_images/math/e0b0c3f8dc7a0eb4d53be52014415c69306d607b.png" alt="v_i\in V"/> in state <img class="math" src="_images/math/26eeb5258ca5099acf8fe96b2a1049c48c89a5e6.png" alt="x"/>.
+Since the state space is a cartesian product, it can naturally be arranged to form a grid with as many dimensions as there are components.</p>
+<blockquote>
+<div><p><em>Example</em>: We give two examples: The 2-component regulatory graph of the <a class="reference internal" href="running_example.html"><em>Running example</em></a> and its state space, arranged in a 2-dimensional grid,</p>
+<a class="reference internal image-reference" href="_images/appendix_A_03.jpg"><img alt="_images/appendix_A_03.jpg" class="align-center" src="_images/appendix_A_03.jpg" style="width: 401.0px; height: 155.0px;" /></a>
+<p>and a 3-component regulatory graph and its state space, arranged in a 3-dimensional grid:</p>
+<a class="reference internal image-reference" href="_images/appendix_A_04.jpg"><img alt="_images/appendix_A_04.jpg" class="align-center" src="_images/appendix_A_04.jpg" style="width: 412.0px; height: 164.5px;" /></a>
+</div></blockquote>
+<p>When we discuss the <a class="reference internal" href="#appendixa-async-dynamics"><em>dynamics</em></a> of a regulatory graph, we will assign behaviors the descriptions of the system. We might, for example, say: If the activity of component <img class="math" src="_images/math/e3c09383f52ff7db11358e4aa6ca6c0307b02d76.png" alt="v_2"/> is greater or euqal to <img class="math" src="_images/math/dce34f4dfb2406144304ad0d6106c5382ddd1446.png" alt="1"/>, then the activity of its target <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/> will tend to <img class="math" src="_images/math/bc1f9d9bf8a1b606a4188b5ce9a2af1809e27a89.png" alt="0"/>.
+The first part of this statement, &#8220;If the activity of <img class="math" src="_images/math/e3c09383f52ff7db11358e4aa6ca6c0307b02d76.png" alt="v_2"/> is greater or euqal to <img class="math" src="_images/math/dce34f4dfb2406144304ad0d6106c5382ddd1446.png" alt="1"/>&#8221;, is a description of the state of the system. We can then enumerate all states to which this description applies.
+Therefore, a system description implicitly defines a subset of the state space.</p>
+<p>It is convenient to formalise system-descriptions by means of a language.
+The atomic statements in this language are inequalities regarding the component activities.
+These can be combined by logic operators to form more complex formulae, that we call &#8220;state formulas&#8221;.</p>
+<p>As a remark: This is analogous to the &#8220;propositional logic formulae over AP&#8221; in model checking (see e.g. A.3 in <a class="reference internal" href="bibliography.html#baier08" id="id3">[Baier08]</a>).
+Before we define the <em>state formula</em> syntax, let us take a look at some examples:</p>
+<blockquote>
+<div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: We give three examples to illustrate how state formulas, i.e.,  system descriptions, define subsets of the state space.
+States to which the description applies are enclosed in gray boxes.</p>
+<a class="reference internal image-reference" href="_images/appendix_A_05.jpg"><img alt="_images/appendix_A_05.jpg" class="align-center" src="_images/appendix_A_05.jpg" style="width: 575.0px; height: 148.0px;" /></a>
+</div></blockquote>
+<p>Now to the formal definitions of the syntax.</p>
+<blockquote id="appendixa-state-formulas">
+<div><p><strong>State formulas</strong></p>
+<p>Let <img class="math" src="_images/math/2482ba5a9805d97a153538716a288f62991d7a78.png" alt="(V=\{v_1,\dots,v_n\},\rho)"/> be the components and maximal activities of the considered state space <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>, with <img class="math" src="_images/math/00f2df4259b37d1a5ccb067fd56dce71578254e1.png" alt="M:=\max_{v_i\in V}\{\rho(v_i)\}"/> the overall maximal activity level.
+We associate a finite set of atomic propositions <img class="math" src="_images/math/e3bb4eeb347e74e025fd175c22f1f7275af0555e.png" alt="AP"/> to <img class="math" src="_images/math/47772de7777689cb356bbae498eb7f99bd5b6eab.png" alt="(V,M)"/>, that consists of all <em>component inequalities</em> together with the proposition <em>True</em>:</p>
+<pre>
+<strong id="grammar-token-atom">atom     </strong> ::=  <a class="reference internal" href="#grammar-token-component"><tt class="xref docutils literal"><span class="pre">component</span></tt></a> <a class="reference internal" href="appendixB.html#grammar-token-operator"><tt class="xref docutils literal"><span class="pre">operator</span></tt></a> <a class="reference internal" href="#grammar-token-component"><tt class="xref docutils literal"><span class="pre">component</span></tt></a> | <a class="reference internal" href="#grammar-token-component"><tt class="xref docutils literal"><span class="pre">component</span></tt></a> <a class="reference internal" href="appendixB.html#grammar-token-operator"><tt class="xref docutils literal"><span class="pre">operator</span></tt></a> <a class="reference internal" href="appendixB.html#grammar-token-activity"><tt class="xref docutils literal"><span class="pre">activity</span></tt></a> | 'True'
+<strong id="grammar-token-component">component</strong> ::=  'v1'|'v2'|...|'vn'
+<strong id="grammar-token-activity">activity </strong> ::=  '0'|'1'|'2'|...|'M'
+<strong id="grammar-token-operator">operator </strong> ::=  '&lt;'|'&lt;='|'='|'&gt;='|'&gt;'|'!='
+</pre>
+<p>State formulas are defined to be propositional logic formulas over the atomic propositions:</p>
+<pre>
+<strong id="grammar-token-state_formula">state_formula</strong> ::=  <a class="reference internal" href="#grammar-token-atom"><tt class="xref docutils literal"><span class="pre">atom</span></tt></a> | 'not' <a class="reference internal" href="#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a> | <a class="reference internal" href="#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a> 'and' <a class="reference internal" href="#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a> | <a class="reference internal" href="#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a> 'or' <a class="reference internal" href="#grammar-token-state_formula"><tt class="xref docutils literal"><span class="pre">state_formula</span></tt></a>
+</pre>
+<p>We can <em>evaluate</em> a formula <img class="math" src="_images/math/2c175f60eecef1de7560c3bdea495d69f26f719d.png" alt="\phi"/>, i.e., turn it into a subset of <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/>, by writing <img class="math" src="_images/math/efb5c640d80dbfcdd02960311c118fcdf1ae8ce3.png" alt="X[\phi]"/>.
+A state <img class="math" src="_images/math/e789763cfcc6a3688812b3660fda9b6d9cc80a4c.png" alt="x\in X"/> belongs to the evaluation of <img class="math" src="_images/math/2c175f60eecef1de7560c3bdea495d69f26f719d.png" alt="\phi"/>, i.e. <img class="math" src="_images/math/0487674b11fa6387b8ce367dd97284c8b16053be.png" alt="x\in X[\phi]"/>, if the Boolean expression, obtained from <img class="math" src="_images/math/2c175f60eecef1de7560c3bdea495d69f26f719d.png" alt="\phi"/> by replacing the component names with the activities of <img class="math" src="_images/math/26eeb5258ca5099acf8fe96b2a1049c48c89a5e6.png" alt="x"/>, evaluates to true.
+If <img class="math" src="_images/math/0487674b11fa6387b8ce367dd97284c8b16053be.png" alt="x\in X[\phi]"/> we say that <img class="math" src="_images/math/26eeb5258ca5099acf8fe96b2a1049c48c89a5e6.png" alt="x"/> is referenced by <img class="math" src="_images/math/2c175f60eecef1de7560c3bdea495d69f26f719d.png" alt="\phi"/>.
+The atom <img class="math" src="_images/math/db644fb348b9999361803a55862fc55a75636508.png" alt="True"/> is used to reference <em>all states</em>, i.e., <img class="math" src="_images/math/274ea6fe3f1a6d5d6bd2a20cf1cdddf36d2b5147.png" alt="X[True]=X"/>.</p>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: The state <img class="math" src="_images/math/4e0ef68f274ec95f4a8f94eebff49accdcf689ec.png" alt="(0,2)"/> belongs to the evaluation of the formula <img class="math" src="_images/math/d5a2862c92ae1ecb61faebe119a2acf7263b8836.png" alt="v_1&lt;v_2\;or\;v_2=0"/>, because the Boolean expression obtained from the formula by replacing the component names with the activities of the state is <img class="math" src="_images/math/18963cc3e2b21ccfb97a9eaa43c394a47e72be77.png" alt="0&lt;2\;or\;2=0"/>, which is true.</p>
+</div></blockquote>
+<p>Note that taking the union of the evaluations of two formulas <img class="math" src="_images/math/e410ed332bcd61a0da1eceb59393973a6453eea7.png" alt="X[\phi_1]\cup X[\phi_2]"/> is equivalent to evaluating the disjunction <img class="math" src="_images/math/769aaac43e87a78e23dd2d5da172155b254016b4.png" alt="X[\phi_1\;or\;\phi_2]"/>. Similarly,</p>
+<blockquote>
+<div><div class="math">
+<p><img src="_images/math/5134ca54fcdb82a02eadecf4f86124b153bad76f.png" alt="X[\phi_1] \cap X[\phi_2] = X[\phi_1\;and\;\phi_2]."/></p>
+</div></div></blockquote>
+</div>
+<div class="section" id="parametrizations">
+<span id="appendixa-parametrizations"></span><h2>4.4. Parametrizations<a class="headerlink" href="#parametrizations" title="Permalink to this headline">¶</a></h2>
+<p>In this subsection we discuss how to parametrize a regulatory graph.
+A parametrization allows us to determine all transitions between states and thus study the dynamics of a regulatory network.
+A parametrization provides all the information necessary to determine the combined effect of components on their targets in every state.
+The effect will not necessarily depend on the exact component activities of a considered state,
+but only on the regulation thresholds that are surpassed in this state.
+We formalize this idea in the following concepts.</p>
+<blockquote id="appendixa-interaction-intensities">
+<div><p><strong>Interaction intensities</strong></p>
+<p>The thresholds <img class="math" src="_images/math/9c52a53d5800a031c4dcca198c88faab1f0fe380.png" alt="\theta(v_iv_j)=(t_1,\dots,t_m)"/> of an interaction <img class="math" src="_images/math/83354070aa6cd038f9f7bc3b005cc4c7b2bbe055.png" alt="v_iv_j"/> divide the effect of the regulator <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/> on
+its target <img class="math" src="_images/math/42628ab5952aa041b3649af187c7f256cfb4fe9d.png" alt="v_j"/> into <img class="math" src="_images/math/4bea4f5ee837b0249288558f2fb73a871b264491.png" alt="m+1"/> cases of <em>different intensity</em>,
+denoted by <img class="math" src="_images/math/0e9f1eda29ebd3223b26b1efe793686a9a7e1d63.png" alt="I(v_iv_j)=\{0,1,\dots,m\}"/>. To each intensity <img class="math" src="_images/math/e6c991561f447049959d3d046bec53538edfefa5.png" alt="i\in I"/> we associate a state formula <img class="math" src="_images/math/971c6fffae15ce0917d9444a42781b020fefe6b5.png" alt="\psi_{v_iv_j}^i"/>:</p>
+</div></blockquote>
+<div class="math">
+<p><img src="_images/math/5b73429cb578c28402ac2ea3f75eadf423ed84e1.png" alt="\begin{array}{l|lll}
+\textrm{Intensity}&amp;\multicolumn{3}{c}{\textrm{State formula}} \\
+\hline
+0&amp;\psi_{v_iv_j}^0:\equiv 0&amp;\leq v_i&lt;&amp; t_1,\\
+1&amp;\psi_{v_iv_j}^1:\equiv t_1&amp;\leq v_i&lt;&amp; t_2,\\
+\dots&amp;&amp;\dots\\
+m-1&amp;\psi_{v_iv_j}^{m-1}:\equiv t_{m-1}&amp;\leq v_i&lt;&amp; t_m,\\
+m&amp;\psi_{v_iv_j}^m:\equiv t_m&amp;\leq v_i\leq&amp; \rho(v_i)
+\end{array}."/></p>
+</div><p>The formula associated to intensity <img class="math" src="_images/math/e0533841aeb9e5705c8a1e99aaeafdb3b9c04a8a.png" alt="i\in I(v_iv_j)"/> references all states, where the regulators activity has surpassed <img class="math" src="_images/math/34857b3ba74ce5cd8607f3ebd23e9015908ada71.png" alt="i"/> thresholds of <img class="math" src="_images/math/0747317ad3f9c9625514e5756023ca53fc28a9b2.png" alt="\theta(v_iv_j)"/>.
+Therefore, every state of state space is referenced by <em>exactly one intensity formula</em>: the evaluated formulas form a partition of the state space.
+In the simplest case an interaction has a single threshold. Such an interaction defines two intensities, namely 0 and 1,
+and two formulas: the formula where the regulators activity is below the threshold, and the one where it is equal to or above it.</p>
+<blockquote>
+<div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: The table below lists all intensities and associated state formulas.</p>
+<div class="math">
+<p><img src="_images/math/ba0eae0e08f1f9a1cd316bc31ef3cb839adb93fd.png" alt="\begin{array}{l|ll}
+\textrm{Interaction}&amp;\textrm{Intensity}&amp;\textrm{State formulas}\\
+\hline
+v_1v_1  &amp; 0 &amp; \psi_{v_1v_1}^{0}:\equiv 0\leq v_1&lt;1\\
+                &amp; 1 &amp; \psi_{v_1v_1}^{1}:\equiv 1\leq v_1\leq2\\
+\hline
+v_1v_2  &amp; 0 &amp; \psi_{v_1v_2}^{0}:\equiv 0\leq v_1&lt;1\\
+                &amp; 1 &amp; \psi_{v_1v_2}^{1}:\equiv 1\leq v_1&lt;2\\
+                &amp; 2 &amp; \psi_{v_1v_2}^{2}:\equiv 2\leq v_1\leq2\\
+\hline
+v_2v_1  &amp; 0 &amp; \psi_{v_2v_1}^{0}:\equiv 0\leq v_2&lt;1\\
+                &amp; 1 &amp; \psi_{v_2v_1}^{1}:\equiv 1\leq v_2\leq2\\
+\hline
+v_2v_2  &amp; 0 &amp; \psi_{v_2v_2}^{0}:\equiv 0\leq v_2&lt;2\\
+                &amp; 1 &amp; \psi_{v_2v_2}^{1}:\equiv 2\leq v_2\leq2\\
+\end{array}."/></p>
+</div><p>The four images below illustrate the state space partitions for every interaction.
+States that have the same intensity with respect to an interaction are enclosed by gray boxes.
+The corresponding intensity of the interaction is indicated inside the blue circles:</p>
+<a class="reference internal image-reference" href="_images/appendix_A_06.jpg"><img alt="_images/appendix_A_06.jpg" class="align-center" src="_images/appendix_A_06.jpg" style="width: 680.5px; height: 194.0px;" /></a>
+</div></blockquote>
+<p>The intensities of an interaction give only an incomplete picture of a components regulation,
+because the other regulators intensities are left unspecified.
+A complete specification of the intensities of all regulators of a component is called a <em>regulatory context</em> of that component:</p>
+<blockquote id="appendixa-regulatory-context">
+<div><p><strong>Regulatory context</strong></p>
+<p>Let <img class="math" src="_images/math/96ab646de7704969b91c76a214126b45f2b07b25.png" alt="d"/> be the number of regulators of a component <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/> and <img class="math" src="_images/math/68dbfc6d05f1a1e108b911e1c2e013c4f33f1f0e.png" alt="r_1&lt;\dots&lt;r_{d}"/> be their indices in <img class="math" src="_images/math/12d58aa29201da09d8e620f8698e3a37547f6b4a.png" alt="V"/>.
+The regulatory contexts <img class="math" src="_images/math/c117e8403b3b9cf74d2f63f6627aa17c1995e3bc.png" alt="C_i"/> of <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/> are all combinations of assigning intensities to its regulators:</p>
+<div class="math">
+<p><img src="_images/math/c6317b609b740aacd0163eb8b7dd72e3a6bb8afd.png" alt="C_i:=\prod_{j=1}^{d}I(v_{r_j}v_i)."/></p>
+</div></div></blockquote>
+<p>As before with the levels of an interaction we identify each regulatory context of a component with a state formula <img class="math" src="_images/math/0d679fd9e0eb60e30e2415e98559986854725131.png" alt="\psi_i^c"/>.
+We do this by taking the <em>conjunction</em> of the formulas associated to each regulators intensity in the context.
+The formula associated to a context <img class="math" src="_images/math/3c230d6b6a6086e937f618b19118811859462bec.png" alt="c=(i_1,i_2,...,i_d)"/> of component <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/> is therefore <img class="math" src="_images/math/8ed9fb12f20049a3b0647d7632f17b97d7cef15d.png" alt="\psi_i^c:\equiv \phi_1\;and\;\phi_2\;...\;and\;\phi_d"/>,
+where <img class="math" src="_images/math/b91ac9c58c0e22ff0b88f239dbda5d97e8329e81.png" alt="\phi_k"/> is the formula associated to intensity <img class="math" src="_images/math/d918c0ad087769bca058188217bdc29e865d685c.png" alt="i_k"/>.</p>
+<blockquote>
+<div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: The table below lists all regulatory contexts and associated formulas.</p>
+<div class="math">
+<p><img src="_images/math/247868e2602bef6de8036a34a74fb20dd2c7f4ff.png" alt="\begin{array}{l|ll}
+\textrm{Component}&amp;\textrm{Context}&amp;\textrm{State formula}\\
+\hline
+v_1             &amp; 00 &amp; \psi_1^{00}:\equiv 0\leq v_1&lt;1           \textrm{ and } 0\leq v_2&lt;1\\
+                &amp; 01 &amp; \psi_1^{01}:\equiv 0\leq v_1&lt;1           \textrm{ and } 1\leq v_2\leq2\\
+                &amp; 10 &amp; \psi_1^{10}:\equiv 1\leq v_1\leq2        \textrm{ and } 0\leq v_2&lt;1\\
+                &amp; 11 &amp; \psi_1^{11}:\equiv 1\leq v_1\leq2        \textrm{ and } 1\leq v_2\leq2\\
+\hline
+v_2             &amp; 00 &amp; \psi_1^{00}:\equiv 0\leq v_1&lt;1           \textrm{ and } 0\leq v_2&lt;2\\
+                &amp; 01 &amp; \psi_1^{01}:\equiv 0\leq v_1&lt;1           \textrm{ and } 2\leq v_2\leq2\\
+                &amp; 10 &amp; \psi_1^{10}:\equiv 1\leq v_1&lt;2           \textrm{ and } 0\leq v_2&lt;2\\
+                &amp; 11 &amp; \psi_1^{11}:\equiv 1\leq v_1&lt;2           \textrm{ and } 2\leq v_2\leq2\\
+                &amp; 20 &amp; \psi_1^{20}:\equiv 2\leq v_1\leq2        \textrm{ and } 0\leq v_2&lt;2\\
+                &amp; 21 &amp; \psi_1^{21}:\equiv 2\leq v_1\leq2        \textrm{ and } 2\leq v_2\leq2\\
+\end{array}."/></p>
+</div></div></blockquote>
+<p>As before with the intensities of an interaction, the evaluated formulas of the contexts of a component form a <em>partition of the state space</em>.</p>
+<blockquote>
+<div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: The two images below illustrate how the regulatory contexts of a component partition the state space. States belonging to the same part are enclosed by gray boxes.
+The intensities of the contexts are indicated inside the blue circles:</p>
+<a class="reference internal image-reference" href="_images/appendix_A_07.jpg"><img alt="_images/appendix_A_07.jpg" class="align-center" src="_images/appendix_A_07.jpg" style="width: 380.0px; height: 229.0px;" /></a>
+</div></blockquote>
+<p>A regulatory context is the fundamental building block of a components dynamics. It is what the component can <em>perceive</em> of the state of the system.
+As this description suggests, a components dynamics must be identical in every state that belongs to the same regulatory context. The dynamical behavior, or what the component <em>does</em> in a state of the system, is determined by assigning a target activity value to each of its contexts.
+It should be interpreted as a regulation tendency: It describes, in absolute terms, the activity towards which the component tends, if it is in the context.</p>
+<p>Now, we define the <em>kinetic parameters</em> as a set of symbolic variables representing a component and one of its contexts.</p>
+<blockquote id="appendixa-kinetic-parameters">
+<div><p><strong>Kinetic parameters</strong></p>
+<p>To a regulatory graph <img class="math" src="_images/math/71b1d4863ff0b5eadb4bca7ad84560c55f63976c.png" alt="\mathcal R"/> we associate a set</p>
+<div class="math">
+<p><img src="_images/math/e6548aa4f38291def672e694fe153107a9b7be63.png" alt="K_{\mathcal R}=\{K_i^{c}\;|\;v_i\in V,c\in C_i\}"/></p>
+</div><p>of symbolic variables, called <em>kinetic parameters</em>.
+Each kinetic parameter <img class="math" src="_images/math/035fcb9ffd9a2e37b7bc55adfa1ab837bf11c767.png" alt="K_i^{c}"/> represents exactly one regulatory context <img class="math" src="_images/math/5d8175e978f77af32f14c611f4f2096414c59bb0.png" alt="c\in C_i"/> of one component <img class="math" src="_images/math/e0b0c3f8dc7a0eb4d53be52014415c69306d607b.png" alt="v_i\in V"/>.
+To simplify notation, we use <em>concise tuple representation</em> for the contexts, i.e., <img class="math" src="_images/math/e68492e980438d6c74d33640e66cd84ebee6f06e.png" alt="K_1^{12}"/> instead of <img class="math" src="_images/math/d02ad49d45e635b8386ff72e6f8ed8c4732acc0e.png" alt="K_1^{(1,2)}"/>.</p>
+</div></blockquote>
+<p>A regulatory graph has therefore <img class="math" src="_images/math/7fb4031e795ea82b45f6fefba2ad0a466756c171.png" alt="\sum_{i=1}^n|C_i|"/> kinetic parameters.
+The running example has <img class="math" src="_images/math/5fb63be3aea0e2c2da7142ece73318974b0a6940.png" alt="4+6=10"/> parameters.
+Finally, we can define an assignment, called <em>parametrization</em>, of target values to the kinetic parameters:</p>
+<blockquote>
+<div><p><strong>Parametrization</strong></p>
+<p>Let <img class="math" src="_images/math/69d039faaf636645ca60ea58f1413920d27ef39b.png" alt="m:=\max\{\rho(v_i)\;|\;v_i\in V\}"/> be the maximum of all maximal activities. A function <img class="math" src="_images/math/f9c0862f1859c85db8e1de3c52155900d6a18065.png" alt="P:K_{\mathcal R}\rightarrow [0..m]"/>, that assigns target values <img class="math" src="_images/math/5229c3603c505ea93e3cbd4ebfd026bece85ecf3.png" alt="P(K_i^c)"/> to the kinetic parameters <img class="math" src="_images/math/378aa3e08750dff2d107e52d77f3a86352dc850a.png" alt="K_i^c"/>, such that</p>
+<div class="math">
+<p><img src="_images/math/59555f0e32eb31305feab4123d5c3ff0fa13be14.png" alt="\forall v_i\in V:\;\forall c\in C_i:\;\; P(K_i^c)\in [0..\rho(v_i)],"/></p>
+</div><p>is called a <em>parametrization</em> of a regulatory graph <img class="math" src="_images/math/71b1d4863ff0b5eadb4bca7ad84560c55f63976c.png" alt="\mathcal R"/>. To simplify notation, we use <img class="math" src="_images/math/0e70c377ed30ff0cd673a3cc65c226862683ddc9.png" alt="P_i^c"/> to denote <img class="math" src="_images/math/5229c3603c505ea93e3cbd4ebfd026bece85ecf3.png" alt="P(K_i^c)"/> and use <em>concise tuple representation</em> for the contexts.</p>
+</div></blockquote>
+<p>We can easily count the number of distinct parametrizations for a regulatory graph. A regulatory graph has</p>
+<div class="math">
+<p><img src="_images/math/4dcea3afba877a8a4a782daa712ebe50aacd10cb.png" alt="\prod_{i=1}^n (\rho(v_i)+1)^{|C_i|}"/></p>
+</div><p>different parametrizations. The running example has <img class="math" src="_images/math/7bc2acd715c6d7ee0cf5962e0a0300c639f2ab83.png" alt="3^4\times 3^6=59\;049"/> parametrizations.</p>
+<p>How are parametrizations used to study the dynamics of a regulatory graph? We can turn them into update functions: As a consequence of the observation that the regulatory contexts of a component form a partition of the state space, every state falls into <em>exactly one context of each component</em>. A parametrization is therefore unambiguous when it comes to the target value of a component in a state. Since this is true for every component, a parametrization defines a function on the state space: Each state is mapped to the state consisting of the respective target values. We can therefore interpret a parametrized regulatory graph as a finite dynamical system as introduced above, in the <a class="reference internal" href="#appendixa-background"><em>Section: Background</em></a>.</p>
+<blockquote>
+<div><p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: The state <img class="math" src="_images/math/4e0ef68f274ec95f4a8f94eebff49accdcf689ec.png" alt="(0,2)"/> falls into context <img class="math" src="_images/math/be11a56a55425d6c6b69f70f5fa98eab95e8ad18.png" alt="(0,1)"/> of component <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/> and context <img class="math" src="_images/math/be11a56a55425d6c6b69f70f5fa98eab95e8ad18.png" alt="(0,1)"/> of <img class="math" src="_images/math/e3c09383f52ff7db11358e4aa6ca6c0307b02d76.png" alt="v_2"/>. The function <img class="math" src="_images/math/ea7485591819f2fa12985710b8f1c5edbcec11a1.png" alt="F_P:X\rightarrow X"/>, derived from a parametrization <img class="math" src="_images/math/4b4cade9ca8a2c8311fafcf040bc5b15ca507f52.png" alt="P"/>, then defines the following image for state <img class="math" src="_images/math/4e0ef68f274ec95f4a8f94eebff49accdcf689ec.png" alt="(0,2)"/>:</p>
+<div class="math">
+<p><img src="_images/math/d26afdffce576374fde871ab9300a122dd8b3bb1.png" alt="F_P(0,2)=(P_1^{01},P_2^{01})."/></p>
+</div></div></blockquote>
+</div>
+<div class="section" id="asynchronous-dynamics">
+<span id="appendixa-async-dynamics"></span><h2>4.5. Asynchronous dynamics<a class="headerlink" href="#asynchronous-dynamics" title="Permalink to this headline">¶</a></h2>
+<p>The dynamics of pair <img class="math" src="_images/math/82052c64366b11b573ceb313efd35532f4367d3c.png" alt="(\mathcal R, P)"/> is captured in a so-called state transition graph.
+It is a directed graph <img class="math" src="_images/math/b18eb1f3052ce98c9182b9ca69451daef4b7bb08.png" alt="(X,T)"/> where <img class="math" src="_images/math/6a47ca0fe7cb276abc022af6ac88ddae1a9d6894.png" alt="X"/> is the state space and <img class="math" src="_images/math/013873755cfed7547a1c580163d4222a92e554a6.png" alt="T\subset X\times X"/> is a set of transitions derived from the parametrization by certain update rules. The update rules of the networks introduced in <a class="reference internal" href="#appendixa-background"><em>Section: Background</em></a> are one example. They are synchronous, i.e., components are updated in parallel, and non-unitary, i.e., activities may instantly change to any level. Both are strong simplifications.</p>
+<p>In a more realistic model, the time between the activation of a gene and its product reaching a certain concentration threshold is considered. Different components are then likely to have different synthesis and degradation rates. R. Thomas formalized this refinement and introduced the <em>fully asynchronous update rules</em> (see <a class="reference internal" href="bibliography.html#thomas91" id="id4">[Thomas91]</a>): During a transition, the activity of at most one component changes. If many components &#8220;want to change&#8221;, we add alternative transitions to the transition graph. A state may then have several successor states and we end up with a <em>non-deterministic model</em>.</p>
+<p>With the intention to employ finite dynamical systems in the search for steady states in systems of differential equations, R. Thomas and E.H. Snoussi introduced <em>unitary transitions</em>. An activity changes by either +1 or -1 during a transition, it does not &#8220;jump&#8221;.</p>
+<p>Four different combinations are possible to pair any of &#8220;synchronous, asynchronous&#8221; with any of &#8220;unitary, non-unitary&#8221;. To illustrate the resulting transitions consider the state <img class="math" src="_images/math/f9603ca3089464e548fc6f1366bc474e7efef8d9.png" alt="(0,0)"/> and assume that the parametrization we are working with computes the target state <img class="math" src="_images/math/b2b596a120dcf60e33c7bfe19003bb1675bf37a7.png" alt="(2,2)"/>, i.e., <img class="math" src="_images/math/2905bf0d716c8abfca5e7d3b7f2982151581b935.png" alt="P_1(00)=2,\;P_2(00)=2"/>. The image below has four parts, one for every type of update rule. Transitions are indicated by arrows.</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/appendix_A_10.jpg"><img alt="_images/appendix_A_10.jpg" class="align-center" src="_images/appendix_A_10.jpg" style="width: 438.0px; height: 363.0px;" /></a>
+</div></blockquote>
+<p>The transitions of the unitary asynchronous transition graph <img class="math" src="_images/math/b18eb1f3052ce98c9182b9ca69451daef4b7bb08.png" alt="(X,T)"/> of a parametrized regulatory graph <img class="math" src="_images/math/82052c64366b11b573ceb313efd35532f4367d3c.png" alt="(\mathcal R, P)"/> are defined as follows. For every component and each of its regulatory contexts, we increase the activity of states in the context and below the target value by one, and decrease the activity of states above the target value by one. States where the activity of the considered component is equal to the target value are left steady. To simplify notation for unitary changes, we interpret states as <em>vectors</em> and use vector addition with <img class="math" src="_images/math/26ae315076f64895667486f0c8faaa5ea17b5d59.png" alt="e_i"/> the unit vector in direction <img class="math" src="_images/math/34857b3ba74ce5cd8607f3ebd23e9015908ada71.png" alt="i"/>.</p>
+<blockquote>
+<div><p><strong>Asynchronous transitions</strong></p>
+<p>For each context <img class="math" src="_images/math/5d8175e978f77af32f14c611f4f2096414c59bb0.png" alt="c\in C_i"/> of each component <img class="math" src="_images/math/85ffd98b4eaea58a8db38fd0047e3a1d7c5661a0.png" alt="v_i"/>, let <img class="math" src="_images/math/841cb22489f4618bac7cc4435b853a8a0302ca7c.png" alt="\psi(i,c)"/> be the corresponding <a class="reference internal" href="#appendixa-state-formulas"><em>state formula</em></a>.
+We add the following transitions to <img class="math" src="_images/math/2554b6496c3b678897e9b060ef00aa9f0a7d7ece.png" alt="T"/>:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Increase: For every state <img class="math" src="_images/math/b9513802f88023be3098308501d887c533ba8188.png" alt="x\in X[\psi(i,c)\;and\;v_i&lt;P_i^c]"/> add the transition <img class="math" src="_images/math/b905440d3265a1738b342a5149dd42a3d311fa81.png" alt="(x,x+e_i)"/> to <img class="math" src="_images/math/2554b6496c3b678897e9b060ef00aa9f0a7d7ece.png" alt="T"/>.</li>
+<li>Decrease: For every state <img class="math" src="_images/math/7814a343732292a002adcc52d180b340466907d6.png" alt="x\in X[\psi(i,c)\;and\;v_i&gt;P_i^c]"/> add the transition <img class="math" src="_images/math/29d25fb6f4e66a5969302bbb017e19219bee80dc.png" alt="(x,x-e_i)"/> to <img class="math" src="_images/math/2554b6496c3b678897e9b060ef00aa9f0a7d7ece.png" alt="T"/>.</li>
+</ul>
+</div></blockquote>
+<p>Finally, we add a loop onto every state <img class="math" src="_images/math/e789763cfcc6a3688812b3660fda9b6d9cc80a4c.png" alt="x\in X"/> that is left with out-degree 0 after the above procedure.
+Those states are called <em>steady states</em> or <em>fixpoints</em> of the state transition graph.</p>
+</div></blockquote>
+<div class="topic">
+<p class="topic-title first">To do:</p>
+<ul class="simple">
+<li>Illustration for adding transitions by the rules (1) and (2) for a single context of a single component.</li>
+<li>Illustration of a STG for running example.</li>
+<li>Discuss &#8220;normalization&#8221; of parametrizations for asynchronous transition graphs.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. Appendix A: Finite Dynamical Systems</a><ul>
+<li><a class="reference internal" href="#background-finite-dynamical-systems">4.1. Background: Finite Dynamical Systems</a></li>
+<li><a class="reference internal" href="#regulatory-graphs">4.2. Regulatory graphs</a></li>
+<li><a class="reference internal" href="#state-space-and-state-formulas">4.3. State space and state formulas</a></li>
+<li><a class="reference internal" href="#parametrizations">4.4. Parametrizations</a></li>
+<li><a class="reference internal" href="#asynchronous-dynamics">4.5. Asynchronous dynamics</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="section3.html"
+                        title="previous chapter">3. Section 3: Analysis</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="appendixB.html"
+                        title="next chapter">5. Appendix B: Parameter Constraint Language</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/appendixA.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="appendixB.html" title="5. Appendix B: Parameter Constraint Language"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="section3.html" title="3. Section 3: Analysis"
+             >previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, H. Klarner, S. Meiers, M. Seeger, J. Tackmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

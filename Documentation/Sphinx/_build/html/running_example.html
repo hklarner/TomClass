@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Running Example Summary Page &mdash; Enumerator Tool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Enumerator Tool 1.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="running-example-summary-page">
+<h1>Running Example Summary Page<a class="headerlink" href="#running-example-summary-page" title="Permalink to this headline">¶</a></h1>
+<p>The running example is introduced step by step in <a class="reference internal" href="appendixA.html"><em>Appendix A</em></a>. This page is a summary that may be opened in a new window while reading <a class="reference internal" href="appendixA.html"><em>Appendix A</em></a> or <a class="reference internal" href="appendixB.html"><em>Appendix B</em></a>.
+The <a class="reference internal" href="appendixA.html#appendixa-reg-graphs"><em>regulatory graph</em></a> and <a class="reference internal" href="appendixA.html#appendixa-state-space"><em>state space</em></a> of the running example are:</p>
+<a class="reference internal image-reference" href="_images/running_example_01.jpg"><img alt="_images/running_example_01.jpg" class="align-center" src="_images/running_example_01.jpg" style="width: 512.0px; height: 238.5px;" /></a>
+<p>Formally, the regulatory graph consists of <img class="math" src="_images/math/6244cd0560ca04356898adab9cd4b0b2e2b534fd.png" alt="\mathcal R=(V,E,\rho,\theta)"/>, where</p>
+<div class="math">
+<p><img src="_images/math/01484aa4440b8087648e1f3a92155247a369e32f.png" alt="\begin{array}{l}
+        V=\{v_1,v_2\}\\
+        E=\{v_1v_1,v_1v_2,v_2v_1,v_2v_2\}\\
+        \theta(v_1v_1)=(1)\\
+        \theta(v_1v_2)=(1,2)\\
+        \theta(v_2v_1)=(1)\\
+        \theta(v_2v_2)=(2)\\
+        \rho(v_1)=2\\
+        \rho(v_2)=2
+\end{array}."/></p>
+</div><p>Component <img class="math" src="_images/math/a3ef75cc31c88a4eb1c121de7a914b0d73882ee2.png" alt="v_1"/> has 4 <a class="reference internal" href="appendixA.html#appendixa-regulatory-context"><em>regulatory contexts</em></a> and component <img class="math" src="_images/math/e3c09383f52ff7db11358e4aa6ca6c0307b02d76.png" alt="v_2"/> has 6:</p>
+<div class="math">
+<p><img src="_images/math/021e8357e4c7f0608573e0aab2510b9900664c0b.png" alt="C_1=\{(0,0),(0,1),(1,0),(1,1)\},\;\;C_2=\{(0,0),(0,1),(1,0),(1,1),(2,0),(2,1)\}."/></p>
+</div><p>The state space partition by the contexts are:</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="_images/appendix_A_07.jpg"><img alt="_images/appendix_A_07.jpg" class="align-center" src="_images/appendix_A_07.jpg" style="width: 380.0px; height: 229.0px;" /></a>
+</div></blockquote>
+<p>The running example has 10 <a class="reference internal" href="appendixA.html#appendixa-kinetic-parameters"><em>kinetic parameters</em></a>:</p>
+<div class="math">
+<p><img src="_images/math/689ad99cec81b2e6d5d1753f9f42be368fe12fdb.png" alt="K_{\mathcal R}=\{K_1^{00},K_1^{01},K_1^{10},K_1^{11},K_2^{00},K_2^{01},K_2^{10},K_2^{11},K_2^{20},K_2^{21}\}"/></p>
+</div></div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/running_example.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, H. Klarner, S. Meiers, M. Seeger, J. Tackmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

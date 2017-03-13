@@ -1,0 +1,653 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7. Appendix T: Technical Documentation &mdash; Enumerator Tool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Enumerator Tool 1.0 documentation" href="index.html" />
+    <link rel="next" title="8. Bibliography" href="bibliography.html" />
+    <link rel="prev" title="6. Appendix C: Case Studies" href="appendixC.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bibliography.html" title="8. Bibliography"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="appendixC.html" title="6. Appendix C: Case Studies"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="appendix-t-technical-documentation">
+<h1>7. Appendix T: Technical Documentation<a class="headerlink" href="#appendix-t-technical-documentation" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p><strong>Contents of Appendix T: Technical Documentation</strong></p>
+<ul class="simple">
+<li><a class="reference internal" href="#appendixt-session"><em>Core/Session.py</em></a></li>
+<li><a class="reference internal" href="#appendixt-predicates"><em>Core/CPLanguage.py</em></a></li>
+<li><a class="reference internal" href="#appendixt-parser"><em>Core/Parser.py</em></a></li>
+<li><a class="reference internal" href="#appendixt-cpsolver"><em>Core/CPSolver.py</em></a></li>
+<li><a class="reference internal" href="#appendixt-database"><em>Core/Database.py</em></a></li>
+<li><a class="reference internal" href="#appendixt-nusmv"><em>Classifier/NuSMV.py</em></a></li>
+</ul>
+</div></blockquote>
+<div class="section" id="module-Session">
+<span id="core-session-py"></span><span id="appendixt-session"></span><h2>7.1. Core/Session.py<a class="headerlink" href="#module-Session" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Session.Component">
+<em class="property">class </em><tt class="descclassname">Session.</tt><tt class="descname">Component</tt><big>(</big><em>name</em>, <em>index</em><big>)</big><a class="headerlink" href="#Session.Component" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>String</em>) &#8211; The name of the component.</li>
+<li><strong>index</strong> (<em>Integer</em>) &#8211; The index of name in the sorted list of component names.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Contains information about a component.</p>
+<dl class="attribute">
+<dt id="Session.Component.name">
+<tt class="descname">name</tt><a class="headerlink" href="#Session.Component.name" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type :</th><td class="field-body">String</td>
+</tr>
+</tbody>
+</table>
+<p>The name used in the regulatory graph.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Component.index">
+<tt class="descname">index</tt><a class="headerlink" href="#Session.Component.index" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type :</th><td class="field-body">Integer</td>
+</tr>
+</tbody>
+</table>
+<p>The index of the component in the sorted list of names.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Component.max">
+<tt class="descname">max</tt><a class="headerlink" href="#Session.Component.max" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type :</th><td class="field-body">Integer</td>
+</tr>
+</tbody>
+</table>
+<p>The maximal activity level of the component.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Component.targets">
+<tt class="descname">targets</tt><a class="headerlink" href="#Session.Component.targets" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type :</th><td class="field-body">List of <a class="reference internal" href="#Session.Component" title="Session.Component"><tt class="xref py py-class docutils literal"><span class="pre">components</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>The targets of the component in the regulatory graph.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Component.regulators">
+<tt class="descname">regulators</tt><a class="headerlink" href="#Session.Component.regulators" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type :</th><td class="field-body">List of <a class="reference internal" href="#Session.Component" title="Session.Component"><tt class="xref py py-class docutils literal"><span class="pre">components</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+<p>The regulators of the component in the regulatory graph.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Component.thresholds_to">
+<tt class="descname">thresholds_to</tt><a class="headerlink" href="#Session.Component.thresholds_to" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type :</th><td class="field-body">Dictionary: (String, Tuple of Integers)</td>
+</tr>
+</tbody>
+</table>
+<p>Dictionary with target names as keys and integer thresholds as values.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Component.thresholds_from">
+<tt class="descname">thresholds_from</tt><a class="headerlink" href="#Session.Component.thresholds_from" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type :</th><td class="field-body">Dictionary: (String, Tuple of Integers)</td>
+</tr>
+</tbody>
+</table>
+<p>Dictionary with regulator names as keys and integer thresholds as values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Session.Context">
+<em class="property">class </em><tt class="descclassname">Session.</tt><tt class="descname">Context</tt><a class="headerlink" href="#Session.Context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains information about a regulatory context of a component.</p>
+<dl class="attribute">
+<dt id="Session.Context.index">
+<tt class="descname">index</tt><a class="headerlink" href="#Session.Context.index" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type :</th><td class="field-body">Integer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Session.Messenger">
+<em class="property">class </em><tt class="descclassname">Session.</tt><tt class="descname">Messenger</tt><a class="headerlink" href="#Session.Messenger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints messages to the screen. Available methods are:</p>
+<dl class="method">
+<dt id="Session.Messenger.error">
+<tt class="descname">error</tt><big>(</big><em>Text</em><big>)</big><a class="headerlink" href="#Session.Messenger.error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Session.Messenger.warning">
+<tt class="descname">warning</tt><big>(</big><em>Text</em><big>)</big><a class="headerlink" href="#Session.Messenger.warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Session.Messenger.log">
+<tt class="descname">log</tt><big>(</big><em>Text</em><big>)</big><a class="headerlink" href="#Session.Messenger.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Session.Messenger.out">
+<tt class="descname">out</tt><big>(</big><em>Text</em><big>)</big><a class="headerlink" href="#Session.Messenger.out" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Session.Model">
+<em class="property">class </em><tt class="descclassname">Session.</tt><tt class="descname">Model</tt><a class="headerlink" href="#Session.Model" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="Session.Model.components_list">
+<tt class="descname">components_list</tt><a class="headerlink" href="#Session.Model.components_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Model.components_dict">
+<tt class="descname">components_dict</tt><a class="headerlink" href="#Session.Model.components_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Model.contexts_list">
+<tt class="descname">contexts_list</tt><a class="headerlink" href="#Session.Model.contexts_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Session.Model.contexts_dict">
+<tt class="descname">contexts_dict</tt><a class="headerlink" href="#Session.Model.contexts_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CPLanguage">
+<span id="core-cplanguage-py"></span><span id="appendixt-predicates"></span><h2>7.2. Core/CPLanguage.py<a class="headerlink" href="#module-CPLanguage" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CPLanguage.Converter">
+<em class="property">class </em><tt class="descclassname">CPLanguage.</tt><tt class="descname">Converter</tt><big>(</big><em>Messenger</em>, <em>Model</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Messenger</strong> &#8211; A <a class="reference internal" href="#Session.Messenger" title="Session.Messenger"><tt class="xref py py-class docutils literal"><span class="pre">Session.Messenger</span></tt></a> object.</li>
+<li><strong>Model</strong> &#8211; A <a class="reference internal" href="#Session.Model" title="Session.Model"><tt class="xref py py-class docutils literal"><span class="pre">Session.Model</span></tt></a> object.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The following method computes all parameter indeces that are referenced by a state formula and a component.</p>
+<dl class="method">
+<dt id="CPLanguage.Converter.parameter_reference">
+<tt class="descname">parameter_reference</tt><big>(</big><em>StateFormula</em>, <em>Component</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.parameter_reference" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">...</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">...</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>The following 8 methods convert <a class="reference internal" href="appendixB.html"><em>predicates</em></a> expressions to low-level constraints.
+Most of them require the above method <a class="reference internal" href="#CPLanguage.Converter.parameter_reference" title="CPLanguage.Converter.parameter_reference"><tt class="xref py py-meth docutils literal"><span class="pre">parameter_reference()</span></tt></a> to do so.
+The parameters and parameter types that the predicate methods share, are listed below.</p>
+<p><em>Predicate parameters</em></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Component</strong> (<em>String</em>) &#8211; The component used for <a class="reference internal" href="appendixB.html#appendixb-parameter-reference"><em>parameter reference</em></a>.</li>
+<li><strong>StateFormula</strong> (<em>String</em>) &#8211; A <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a>.</li>
+<li><strong>Operator</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'&lt;','&lt;=','=','&gt;=','&gt;','!='</span></tt>.</li>
+<li><strong>Activity</strong> (<em>Integer</em>) &#8211; An activity.</li>
+<li><strong>Quantifier</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'All','Some'</span></tt></li>
+<li><strong>Label</strong> (<em>String</em>) &#8211; One of <tt class="docutils literal"><span class="pre">'Activating','ActivatingOnly','Inhibiting','InhibitingOnly','Observable'</span></tt></li>
+<li><strong>Threshold</strong> &#8211; The interaction threshold of the label.</li>
+<li><strong>Graph</strong> (<em>Dictionary</em>) &#8211; A successor-based representation of a subgraph of the <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>unitary and asynchronous state transition graph</em></a>. Each key of the dictionary is a state. The value of a key is a list of successor states.</li>
+<li><strong>Path</strong> (<em>List of states</em>) &#8211; A list of states, representing a path in the <a class="reference internal" href="appendixA.html#appendixa-async-dynamics"><em>unitary and asynchronous state transition graph</em></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="CPLanguage.Converter.inequality_abs">
+<tt class="descname">inequality_abs</tt><big>(</big><em>Quantifier</em>, <em>StateFormula</em>, <em>Component</em>, <em>Operator</em>, <em>Activity</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.inequality_abs" title="Permalink to this definition">¶</a></dt>
+<dd><p>For semantics see <a class="reference internal" href="appendixB.html#appendixb-inequalities"><em>Predicate Type 1: Inequalities</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CPLanguage.Converter.inequality_rel">
+<tt class="descname">inequality_rel</tt><big>(</big><em>Quantifier</em>, <em>StateFormula1</em>, <em>Component1</em>, <em>Operator</em>, <em>StateFormula2</em>, <em>Component2</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.inequality_rel" title="Permalink to this definition">¶</a></dt>
+<dd><p>For semantics see <a class="reference internal" href="appendixB.html#appendixb-inequalities"><em>Predicate Type 1: Inequalities</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CPLanguage.Converter.identity">
+<tt class="descname">identity</tt><big>(</big><em>Quantifier</em>, <em>StateFormula</em>, <em>Component</em>, <em>Operator</em>, <em>Activity</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>For semantics see <a class="reference internal" href="appendixB.html#appendixb-identities"><em>Predicate Type 2: Identities</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CPLanguage.Converter.multiplex">
+<tt class="descname">multiplex</tt><big>(</big><em>StateFormulas</em>, <em>Component</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.multiplex" title="Permalink to this definition">¶</a></dt>
+<dd><p>The &#8220;compounds&#8221; of a <a class="reference internal" href="appendixB.html#appendixb-multiplexes"><em>multiplex</em></a>.
+The component that is regulated by the multiplex.
+For semantics see <a class="reference internal" href="appendixB.html#appendixb-multiplexes"><em>Predicate Type 3: Multiplexes</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CPLanguage.Converter.edge_label">
+<tt class="descname">edge_label</tt><big>(</big><em>Label</em>, <em>Regulator</em>, <em>Target</em>, <em>Thresholds</em>, <em>StateFormula=&quot;True&quot;</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.edge_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>The optional <a class="reference internal" href="appendixA.html#appendixa-state-formulas"><em>state formula</em></a> that restricts the contexts must satisfy the constraint (see <a class="reference internal" href="appendixB.html#appendixb-edge-labels"><em>edge_label predicate</em></a>). The default <tt class="docutils literal"><span class="pre">True</span></tt> enforces no restriction.
+The regulator component of the interaction.
+The target component of the interaction.
+For semantics see <a class="reference internal" href="appendixB.html#appendixb-edge-labels"><em>Predicate Type 4: Edge Labels</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CPLanguage.Converter.subgraph">
+<tt class="descname">subgraph</tt><big>(</big><em>Graph</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.subgraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>For semantics see <a class="reference internal" href="appendixB.html#appendixb-subgraphs"><em>Predicate Type 5: Subgraphs</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CPLanguage.Converter.path">
+<tt class="descname">path</tt><big>(</big><em>Path</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>For semantics see <a class="reference internal" href="appendixB.html#appendixb-subgraphs"><em>Predicate Type 5: Subgraphs</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CPLanguage.Converter.compare">
+<tt class="descname">compare</tt><big>(</big><em>Quantifier</em>, <em>StateFormula</em>, <em>Component</em>, <em>Operator</em><big>)</big><a class="headerlink" href="#CPLanguage.Converter.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>For semantics see <a class="reference internal" href="appendixB.html#appendixb-comparisons"><em>Predicate Type 6: Comparisons</em></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-Parser">
+<span id="core-parser-py"></span><span id="appendixt-parser"></span><h2>7.3. Core/Parser.py<a class="headerlink" href="#module-Parser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Parser.Interactions">
+<em class="property">class </em><tt class="descclassname">Parser.</tt><tt class="descname">Interactions</tt><big>(</big><em>Messenger</em>, <em>FileName</em><big>)</big><a class="headerlink" href="#Parser.Interactions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Messenger</strong> &#8211; A <a class="reference internal" href="#Session.Messenger" title="Session.Messenger"><tt class="xref py py-class docutils literal"><span class="pre">Session.Messenger</span></tt></a> object.</li>
+<li><strong>FileName</strong> (<em>String</em>) &#8211; Absolute path to interactions text file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="Parser.Interactions.success">
+<tt class="descname">success</tt><big>(</big><big>)</big><a class="headerlink" href="#Parser.Interactions.success" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Whether parsing was successful.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Parser.Interactions.parsed_interactions">
+<tt class="descname">parsed_interactions</tt><big>(</big><big>)</big><a class="headerlink" href="#Parser.Interactions.parsed_interactions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The regulatory graph.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Parser.Constraints">
+<em class="property">class </em><tt class="descclassname">Parser.</tt><tt class="descname">Constraints</tt><big>(</big><em>Messenger</em>, <em>FileName</em><big>)</big><a class="headerlink" href="#Parser.Constraints" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Messenger</strong> &#8211; The <a class="reference internal" href="#Session.Messenger" title="Session.Messenger"><tt class="xref py py-class docutils literal"><span class="pre">Session.Messenger</span></tt></a> object.</li>
+<li><strong>FileName</strong> (<em>String</em>) &#8211; Absolute path to interactions text file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="Parser.Constraints.success">
+<tt class="descname">success</tt><big>(</big><big>)</big><a class="headerlink" href="#Parser.Constraints.success" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Whether parsing was successful.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Parser.Constraints.parsed_constraints_niemeyer">
+<tt class="descname">parsed_constraints_niemeyer</tt><big>(</big><big>)</big><a class="headerlink" href="#Parser.Constraints.parsed_constraints_niemeyer" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The low-level parameter constraints in Python syntax.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">String</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Parser.Constraints.parsed_constraints_minizinc">
+<tt class="descname">parsed_constraints_minizinc</tt><big>(</big><big>)</big><a class="headerlink" href="#Parser.Constraints.parsed_constraints_minizinc" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The low-level parameter constraints in MiniZinc syntax.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">String</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-CPSolver">
+<span id="core-cpsolver-py"></span><span id="appendixt-cpsolver"></span><h2>7.4. Core/CPSolver.py<a class="headerlink" href="#module-CPSolver" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CPSolver.Niemeyer">
+<em class="property">class </em><tt class="descclassname">CPSolver.</tt><tt class="descname">Niemeyer</tt><big>(</big><em>Messenger</em>, <em>Model</em>, <em>Constraints</em><big>)</big><a class="headerlink" href="#CPSolver.Niemeyer" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Messenger</strong> &#8211; The <a class="reference internal" href="#Session.Messenger" title="Session.Messenger"><tt class="xref py py-class docutils literal"><span class="pre">Messenger</span></tt></a> object.</li>
+<li><strong>Model</strong> &#8211; The <a class="reference internal" href="#Session.Model" title="Session.Model"><tt class="xref py py-class docutils literal"><span class="pre">Model</span></tt></a> object.</li>
+<li><strong>Constraints</strong> (<em>String</em>) &#8211; The <a class="reference internal" href="#Parser.Constraints.parsed_constraints_niemeyer" title="Parser.Constraints.parsed_constraints_niemeyer"><tt class="xref py py-meth docutils literal"><span class="pre">constraints</span></tt></a> in Niemeyer format.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="CPSolver.Niemeyer.has_solutions">
+<tt class="descname">has_solutions</tt><big>(</big><big>)</big><a class="headerlink" href="#CPSolver.Niemeyer.has_solutions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Whether the constraints are satisfiable.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CPSolver.Niemeyer.next">
+<tt class="descname">next</tt><big>(</big><big>)</big><a class="headerlink" href="#CPSolver.Niemeyer.next" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A feasible parametrization or &#8220;None&#8221; if there are no more.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List of Integers</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="core-database-py">
+<span id="appendixt-database"></span><h2>7.5. Core/Database.py<a class="headerlink" href="#core-database-py" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt>
+<tt class="descname">SQLite(Messenger, Model,</tt></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="classifier-nusmv-py">
+<span id="appendixt-nusmv"></span><h2>7.6. Classifier/NuSMV.py<a class="headerlink" href="#classifier-nusmv-py" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="user-interfaces">
+<h2>7.7. User Interfaces<a class="headerlink" href="#user-interfaces" title="Permalink to this headline">¶</a></h2>
+<p><strong>new_project.py</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">project_name</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">regulatory_graph</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">initial_constraints</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<p><strong>continue_project.py</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">project_name</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">classifier</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">selection</span> <span class="o">=</span> <span class="s">&quot;all&quot;</span>
+<span class="n">limit</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<p><strong>preferences.py</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">minizinc_path</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">nusmv_path</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="property-specification-files">
+<h2>7.8. Property Specification Files<a class="headerlink" href="#property-specification-files" title="Permalink to this headline">¶</a></h2>
+<p><strong>Model Checking</strong>:</p>
+<div class="highlight-python"><pre>model_line: 'classifier = nusmv model checking'
+name_line: 'property_name =' `name`
+desc_line: 'property_description =' `description`
+unit_line: 'unitary =' `bool`
+sync_line: 'synchronous =' `bool`
+init_line: 'initial_states =' `selection`
+search_line: 'search = ' ('exists' | 'forall')
+spec_line: ('ctl' | 'ltl') '_spec =' `temporal logic formula`
+bool: 'true' | 'false'
+description: {`name` | ' '}</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">7. Appendix T: Technical Documentation</a><ul>
+<li><a class="reference internal" href="#module-Session">7.1. Core/Session.py</a></li>
+<li><a class="reference internal" href="#module-CPLanguage">7.2. Core/CPLanguage.py</a></li>
+<li><a class="reference internal" href="#module-Parser">7.3. Core/Parser.py</a></li>
+<li><a class="reference internal" href="#module-CPSolver">7.4. Core/CPSolver.py</a></li>
+<li><a class="reference internal" href="#core-database-py">7.5. Core/Database.py</a></li>
+<li><a class="reference internal" href="#classifier-nusmv-py">7.6. Classifier/NuSMV.py</a></li>
+<li><a class="reference internal" href="#user-interfaces">7.7. User Interfaces</a></li>
+<li><a class="reference internal" href="#property-specification-files">7.8. Property Specification Files</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="appendixC.html"
+                        title="previous chapter">6. Appendix C: Case Studies</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="bibliography.html"
+                        title="next chapter">8. Bibliography</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/appendixT.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bibliography.html" title="8. Bibliography"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="appendixC.html" title="6. Appendix C: Case Studies"
+             >previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, H. Klarner, S. Meiers, M. Seeger, J. Tackmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

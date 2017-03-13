@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Section 1: Initial Parametrizations &mdash; Enumerator Tool 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Enumerator Tool 1.0 documentation" href="index.html" />
+    <link rel="next" title="2. Section 2: Classifying" href="section2.html" />
+    <link rel="prev" title="Custom Classification for Discrete Regulatory Networks" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="section2.html" title="2. Section 2: Classifying"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Custom Classification for Discrete Regulatory Networks"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="section-1-initial-parametrizations">
+<h1>1. Section 1: Initial Parametrizations<a class="headerlink" href="#section-1-initial-parametrizations" title="Permalink to this headline">¶</a></h1>
+<p>A new project is always created by running the script <tt class="docutils literal"><span class="pre">new_project.py</span></tt>. The script requires a <tt class="docutils literal"><span class="pre">project-name</span></tt> and two input files: a <a class="reference internal" href="#section1-file1"><em>regulatory graph file</em></a> and a <a class="reference internal" href="#section1-file2"><em>initial constraints file</em></a>.
+The <tt class="docutils literal"><span class="pre">project-name</span></tt> and the input file names are specified in the header of the script <tt class="docutils literal"><span class="pre">new_project.py</span></tt> by editing the respective lines:</p>
+<blockquote>
+<div><p><strong>new_project.py</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">project_name</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">regulatory_graph</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">initial_constraints</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The script will first create a new folder, with the given project name, and move it inside the tools projects folder. For reference, a copy of the input files is also moved into the new project folder. Finally a log file, with name <tt class="docutils literal"><span class="pre">&lt;project-name&gt;_log.txt</span></tt>, is created in which all performed tasks are recorded.
+The constraints file is then translated to a <em>finite domain constraint programming problem</em> and passed to the CP solver <a class="reference external" href="http://www.google.com/search?q=minizinc">MiniZinc</a>. The solver will enumerate <em>all solutions</em>, i.e., all <a class="reference internal" href="appendixA.html#appendixa-parametrizations"><em>parametrizations</em></a>, that satisfy the initial constraints and store them in a <a class="reference external" href="http://www.google.com/search?q=sqlite3+python">sqlite3 database</a> with the name <tt class="docutils literal"><span class="pre">&lt;project-name&gt;.db</span></tt>. To call MiniZinc, the path to its executable must be specified in the file <tt class="docutils literal"><span class="pre">preferences.py</span></tt> by replacing <tt class="docutils literal"><span class="pre">None</span></tt> with the path string:</p>
+<blockquote>
+<div><p><strong>preferences.py</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">minizinc_path</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In the next sections we explain how regulatory graphs and initial constraints are specified in text files:</p>
+<blockquote>
+<div><p><strong>Contents of Section 1: Initial Parametrizations</strong></p>
+<ul class="simple">
+<li><a class="reference internal" href="#section1-file1"><em>Input File 1: Regulatory graph</em></a></li>
+<li><a class="reference internal" href="#section1-file2"><em>Input File 2: Initial Constraints</em></a></li>
+</ul>
+</div></blockquote>
+<div class="section" id="input-file-1-regulatory-graph">
+<span id="section1-file1"></span><h2>1.1. Input File 1: Regulatory graph<a class="headerlink" href="#input-file-1-regulatory-graph" title="Permalink to this headline">¶</a></h2>
+<p>In <a class="reference internal" href="appendixA.html"><em>Appendix A</em></a> we defined a regulatory graph to consist of &#8220;anonymous&#8221; components <img class="math" src="_images/math/34a84bb6ede56644304c990313ef34b40925d541.png" alt="v_1,v_2,\dots,v_n"/>.
+In real applications we like to give names to the components. Hence, we define the token &#8220;name&#8221;, that may be as short as one character, but must be alphanumeric and start with a letter:</p>
+<blockquote>
+<div><pre>
+<strong id="grammar-token-name">name   </strong> ::=  <a class="reference internal" href="#grammar-token-alpha"><tt class="xref docutils literal"><span class="pre">alpha</span></tt></a>+ {<a class="reference internal" href="#grammar-token-alpha"><tt class="xref docutils literal"><span class="pre">alpha</span></tt></a> | <a class="reference internal" href="#grammar-token-numeric"><tt class="xref docutils literal"><span class="pre">numeric</span></tt></a>}
+<strong id="grammar-token-alpha">alpha  </strong> ::=  A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
+<strong id="grammar-token-numeric">numeric</strong> ::=  0,1,2,3,4,5,6,7,8,9
+</pre>
+</div></blockquote>
+<p>A regulatory graph file is a text file that lists all interactions of the graph, <em>one per line</em>, followed by all thresholds of the interaction.
+The regulator, target and thresholds must be seperated by a comma.</p>
+<blockquote>
+<div><p><strong>Regulatory graph file</strong></p>
+<pre>
+<strong id="grammar-token-graph_file">graph_file </strong> ::=  <a class="reference internal" href="#grammar-token-interaction"><tt class="xref docutils literal"><span class="pre">interaction</span></tt></a>+
+<strong id="grammar-token-interaction">interaction</strong> ::=  <a class="reference internal" href="#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a> ',' <a class="reference internal" href="#grammar-token-name"><tt class="xref docutils literal"><span class="pre">name</span></tt></a> ',' <a class="reference internal" href="#grammar-token-threshold"><tt class="xref docutils literal"><span class="pre">threshold</span></tt></a> {',' <a class="reference internal" href="#grammar-token-threshold"><tt class="xref docutils literal"><span class="pre">threshold</span></tt></a>}
+<strong id="grammar-token-threshold">threshold  </strong> ::=  1,2,3,...
+</pre>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>: The regulatory graph file is:</p>
+<div class="highlight-none"><div class="highlight"><pre># Comments begin with a hash
+v1, v1, 1
+v1, v2, 1, 2
+v2, v1, 1
+v2, v2, 2
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="input-file-2-initial-constraints">
+<span id="section1-file2"></span><h2>1.2. Input File 2: Initial Constraints<a class="headerlink" href="#input-file-2-initial-constraints" title="Permalink to this headline">¶</a></h2>
+<p>Like regulatory graphs, initial constraints are specified in a text file. An initial constraint is a Boolean expression over the predefined predicates of <a class="reference internal" href="appendixB.html"><em>Appendix B: Parameter Constraint Language</em></a>.</p>
+<blockquote>
+<div><p><strong>Initial constraints file</strong></p>
+<pre>
+<strong id="grammar-token-constraints_file">constraints_file</strong> ::=  <a class="reference internal" href="#grammar-token-constraints"><tt class="xref docutils literal"><span class="pre">constraints</span></tt></a>*
+<strong id="grammar-token-constraints">constraints     </strong> ::=  <a class="reference internal" href="#grammar-token-constraint"><tt class="xref docutils literal"><span class="pre">constraint</span></tt></a> | <a class="reference internal" href="#grammar-token-constraints"><tt class="xref docutils literal"><span class="pre">constraints</span></tt></a> and <a class="reference internal" href="#grammar-token-constraints"><tt class="xref docutils literal"><span class="pre">constraints</span></tt></a> | <a class="reference internal" href="#grammar-token-constraints"><tt class="xref docutils literal"><span class="pre">constraints</span></tt></a> or <a class="reference internal" href="#grammar-token-constraints"><tt class="xref docutils literal"><span class="pre">constraints</span></tt></a> | not <a class="reference internal" href="#grammar-token-constraints"><tt class="xref docutils literal"><span class="pre">constraints</span></tt></a>
+<strong id="grammar-token-constraint">constraint      </strong> ::=  <a class="reference internal" href="appendixB.html#grammar-token-inequality_abs"><tt class="xref docutils literal"><span class="pre">inequality_abs</span></tt></a> | <a class="reference internal" href="appendixB.html#grammar-token-inequality_rel"><tt class="xref docutils literal"><span class="pre">inequality_rel</span></tt></a> | <a class="reference internal" href="appendixB.html#grammar-token-identity"><tt class="xref docutils literal"><span class="pre">identity</span></tt></a> | <a class="reference internal" href="appendixB.html#grammar-token-multiplex"><tt class="xref docutils literal"><span class="pre">multiplex</span></tt></a> | <a class="reference internal" href="appendixB.html#grammar-token-edge_label"><tt class="xref docutils literal"><span class="pre">edge_label</span></tt></a> | <a class="reference internal" href="appendixB.html#grammar-token-subgraph"><tt class="xref docutils literal"><span class="pre">subgraph</span></tt></a> | <a class="reference internal" href="appendixB.html#grammar-token-path"><tt class="xref docutils literal"><span class="pre">path</span></tt></a>
+</pre>
+<p><a class="reference internal" href="running_example.html"><em>Running example</em></a>:</p>
+<div class="highlight-none"><div class="highlight"><pre># Comments begin with a hash
+Observable(v1, v1, 1) and Observable(v1, v2, 1) and
+Observable(v1, v2, 2) and ActivatingOnly(v2, v1, 1) and
+Some(True[v1] = 0) and Some(True[v1] = 2) and
+Multiplex(v1&gt;0 and v2&gt;0,v1=0,v2=0: v2)
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Section 1: Initial Parametrizations</a><ul>
+<li><a class="reference internal" href="#input-file-1-regulatory-graph">1.1. Input File 1: Regulatory graph</a></li>
+<li><a class="reference internal" href="#input-file-2-initial-constraints">1.2. Input File 2: Initial Constraints</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Custom Classification for Discrete Regulatory Networks</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="section2.html"
+                        title="next chapter">2. Section 2: Classifying</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/section1.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="section2.html" title="2. Section 2: Classifying"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Custom Classification for Discrete Regulatory Networks"
+             >previous</a> |</li>
+        <li><a href="index.html">Enumerator Tool 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, H. Klarner, S. Meiers, M. Seeger, J. Tackmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
