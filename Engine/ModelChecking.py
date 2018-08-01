@@ -2,7 +2,7 @@
 import subprocess
 
 TEMP_FNAME = 'temp.smv'
-NUSMV_CMD = '/home/hannes/github/NuSMV-a/NuSMV-2.6.0/NuSMV/build/bin/NuSMV_linux64'
+NUSMV_CMD = '<enter_your_path_to>/bin/NuSMV'
 
 
 class Interface(object):

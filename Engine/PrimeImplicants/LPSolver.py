@@ -1,6 +1,6 @@
 
 
-import gurobipy
+#import gurobipy
 import itertools as IT
 import sys
 import networkx as nx
@@ -12,7 +12,7 @@ def remove( Primes, Components ):
         if name in Components:
             Components.pop(Components.index(name))
             continue
-        
+
         new_primes[name] = {}
         for value in Primes[name]:
             new_primes[name][value]=[]
@@ -21,9 +21,9 @@ def remove( Primes, Components ):
 
     if Components:
         print 'Check spelling, could not remove',','.join(Components)
-    
+
     return new_primes
-        
+
 
 def compute_inputs( Primes ):
     res = {}
@@ -58,12 +58,12 @@ def compute_bifurcationtree( Primes, Region, Verbose ):
         depth+=1
         primes, region = scenarios.pop()
         circuits = compute_circuits( primes, Verbose)
-           
+
 
         # Divide circuits into consistent sets
         branching_sets = []
         while circuits:
-            
+
             x = circuits.pop()
             hit=False
             for Class in branching_sets:
@@ -79,7 +79,7 @@ def compute_bifurcationtree( Primes, Region, Verbose ):
                         consistent = False
                         branching_sets.append( x )
                         break
-                    
+
 
             if not hit: branching_sets[tuple(sorted(x))]=[x]
 
@@ -87,17 +87,17 @@ def compute_bifurcationtree( Primes, Region, Verbose ):
         print "branching_mSRs"
         for k in branching_mSRs:
             print branching_mSRs[k]
-        
+
         # Pick a combination from branching sets
         constants = compute_constants( primes, region )
         if branching_mSRs:
 
             space = [range(len(branching_mSRs[x])) for x in branching_mSRs]
             for indicator in IT.product(space):
-                
+
                 newconstants = {}
                 for i, k in enumerate(branching_mSRs):
-                    
+
                     newconstants.update( branching_mSRs[k][indicator[i]] )
                 c = dict(constants.items() + newconstants.items())
 
@@ -122,7 +122,7 @@ def compute_percolation( Primes, Constants, Verbose ):
 ##            print '  ooops, incompatible set of constants. spelling?',
 ##            print ','.join([c for c in Constants if not c in Primes ])
 ##            raise Exception
-    
+
     # copy primes
     newconstants = dict(Constants.items())
     newprimes = {}
@@ -141,7 +141,7 @@ def compute_percolation( Primes, Constants, Verbose ):
                     for name in p:
                         if name in _constants:
                             return n,k,p,name
-    
+
 
     # main loop
     hit=True
@@ -156,10 +156,10 @@ def compute_percolation( Primes, Constants, Verbose ):
 
             else:
                 np = dict([x for x in p.items() if x[0]!=name])
-                
+
                 if np in newprimes[n][k]: # np is already a prime: remove
                     newprimes[n][k].remove( p )
-                    
+
                 else:
                     p.pop(name)  # substitute constant: remove n from p
                     if not p: # n is a new constant
@@ -167,14 +167,14 @@ def compute_percolation( Primes, Constants, Verbose ):
                         assert(n not in newconstants)
                         newconstants[n]=k
 
-                
+
     if Verbose>0:
         print '    Percolated:       ',len(newconstants)-len(Constants)
         if Verbose>1:
             print '    New Constants:    ',','.join(['%s=%i'%item for item in newconstants.items() if not item[0] in Constants])
         print '    New network:      ',len(newprimes)
 
-        
+
     return newprimes, newconstants
 
 
@@ -191,7 +191,7 @@ def PrimeId( name, value, prime ):
 def compute_fixpoints( Primes, Objective, Report, Verbose ):
 
     assert( Objective in ['max','min', 'all'] )
-    
+
     if Verbose>0:
         print
         print '   Model has %i components'%len(Primes)
@@ -221,10 +221,10 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
                 pid = PrimeId( name, value, p )
                 names[pid] = '%s=%i_%i'%(name,value,i)
                 arc_variables[pid] = m.addVar(lb=0., ub=1., obj=1., vtype=gurobipy.GRB.BINARY, name=names[pid])
-                
+
     m.update()
 
-            
+
     # safety
     arcs  = [1 for n in Primes for a in Primes[n] for h in Primes[n][a]]
     atoms = [1 for n in Primes for a in Primes[n]]
@@ -232,7 +232,7 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
     assert( len(meta_variables)==len(atoms) )
 
 
-        
+
     # add consistency constraints
     counter=0
     for name in Primes:
@@ -250,7 +250,7 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
         exp  = gurobipy.quicksum([meta_variables['%s=%i'%(name,value)] for value in Primes[name] ])
         m.addConstr( lhs=exp, sense=gurobipy.GRB.LESS_EQUAL, rhs=1., name=name+'_consistency')
         counter +=1
-         
+
     m.update()
     if Verbose>0:
         print '     %i component-consistency constraints'%counter
@@ -270,12 +270,12 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
                     m.addConstr( lhs=exp_arc, sense=gurobipy.GRB.LESS_EQUAL, rhs=exp_meta, name=names[pid]+'_stability')
                     counter+=1
 
-                    
+
     if Verbose>0:
         print '     %i stability constraints'%counter
 
 
-    
+
 
     # set objective
     exp = gurobipy.quicksum( [ v for v in meta_variables.values()] )
@@ -289,12 +289,12 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
         exp = gurobipy.quicksum([])
         m.setObjective( exp, gurobipy.GRB.MAXIMIZE )
     m.update()
-        
+
 
     # solution loop
     m.optimize()
     finished = (m.status==3)
-    
+
     counter=0
     ARC_PIDS  = set([])
     FIXPOINTS = set([])
@@ -308,7 +308,7 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
 ##            if name in current:
 ##                if value!=current[name]: targets.append( pid )
 ##        return targets
-##            
+##
 ##    def get_others(IDS):
 ##        names = set([ID.split('=')[0] for ID in IDS])
 ##        targets = []
@@ -316,8 +316,8 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
 ##            name=pid.split('=')[0]
 ##            if name not in names: targets.append( pid )
 ##        return targets
-    
-    
+
+
     while not finished:
 
         # safety
@@ -326,18 +326,18 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
                 if not x.x==1:
                     print '  **oops, non-binary solution value:',x,x.x
                     raise Exception
-        
+
         # extract arc-ids
         pids     = []
         for pid, x in arc_variables.items():
-            if x.x: pids.append( pid )                
+            if x.x: pids.append( pid )
         if pids:
             ARC_PIDS.add( tuple(sorted(pids)) )
 
         # add new-solutions constraint
         solution  = [pid for pid, x in meta_variables.items() if x.x==1]
         fpoint = tuple(sorted( solution ))
-        
+
         if fpoint in FIXPOINTS:
             print '  **previous solutions:\n',FIXPOINTS
             print '  **oops, duplicate solution:', ','.join(fpoint)
@@ -346,21 +346,21 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
 
         if fpoint:
             FIXPOINTS.add( fpoint )
-                
+
         if Objective=='min':
             exp = gurobipy.quicksum( [meta_variables[pid] for pid in solution] )
             m.addConstr( exp, gurobipy.GRB.LESS_EQUAL, len(solution)-1 )
-            
+
         elif Objective=='max':
             exp = gurobipy.quicksum( [meta_variables[pid] for pid in meta_variables if not pid in solution] )
             m.addConstr( exp, gurobipy.GRB.GREATER_EQUAL, 1 )
-            
+
         else:
             exp1 = gurobipy.quicksum( [meta_variables[pid] for pid in solution] )
             exp2 = gurobipy.quicksum( [1-meta_variables[pid] for pid in meta_variables if not pid in solution] )
             m.addConstr( exp1+exp2, gurobipy.GRB.LESS_EQUAL, len(meta_variables)-1 )
-            
-        
+
+
         m.update()
         m.optimize()
         finished = m.status==3
@@ -368,7 +368,7 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
         if counter%10000==0:
             print '  ** reached iteration limit %i: stopped'%counter
             finished = True
-        
+
     end_time = datetime.datetime.utcnow()
     duration = end_time - start_time
 
@@ -388,13 +388,13 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
                     print '  **oops: inconsistency: %s=%i and %i'%(name,pstate[name],value)
                     raise Exception
             pstate[name] = value
-            
+
             arcs[name] = {}
             arcs[name][value] = dict( [(n,v) for n,v in pid[2:]] )
 
-            
-            
-            
+
+
+
         # append arcs and pstate
         arc_limit = 1000
         if len(ARCSETS)<arc_limit:
@@ -404,14 +404,14 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
 
 
 
-        
+
 
 
     days, seconds = duration.days, duration.seconds
     time_stamp = int(seconds)
     hours = days * 24 + seconds // 3600
     minutes = (seconds % 3600) // 60
-    seconds = seconds % 60 
+    seconds = seconds % 60
     time_delta = '%id %ih %im %is'%(days,hours,minutes,seconds)
 
     FIXPOINTS = sorted(FIXPOINTS, key=lambda x:len(x), reverse=True)
@@ -439,7 +439,7 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
             for n in aset:
                 for v in aset[n]:
                     s+= '   '+str(n).ljust(max_length)+'='+str(v)+'  '+str( aset[n][v] )+'\n'
-        
+
         f = open(Report, 'w')
         f.writelines(s)
         f.close()
@@ -451,8 +451,8 @@ def compute_fixpoints( Primes, Objective, Report, Verbose ):
             name, value = ID.split('=')
             res[name] = int(value)
         result.append( res )
-        
-    
+
+
     return time_stamp, result
 
 
@@ -479,7 +479,7 @@ def compute_cliques( Fixpoints ):
     for clique in nx.find_cliques(graph):
         cliques.append( [Fixpoints[i] for i in clique] )
     return cliques
-    
+
 
 # compute_fixpoints( Primes, Objective, Report, Verbose ): FIXPOINTS
 # compute_percolation( Primes, Constants, Verbose ): newprimes, newconstants
@@ -494,7 +494,7 @@ def copy_primes( Primes ):
             for p in Primes[name][value]:
                 newprimes[name][value].append(dict(p))
     return newprimes
-    
+
 
 def compute_structure( Primes, Report, Verbose, Reasoning ):
     assert( Reasoning in ['brave', 'cautious'] )
@@ -504,7 +504,7 @@ def compute_structure( Primes, Report, Verbose, Reasoning ):
 
     layers = 1
     cores  = 0
-    
+
     constants = compute_constants( Primes )
     newprimes, newconstants = compute_percolation( Primes=Primes, Constants=constants, Verbose=-9 )
 
@@ -520,12 +520,12 @@ def compute_structure( Primes, Report, Verbose, Reasoning ):
         minima = compute_fixpoints( Primes=initial_primes, Objective='min', Report=False, Verbose=-9)
 
         cores += len(minima)
-        
+
         if not minima:
             if not initial_constants in MAXIMA:
                 MAXIMA.append( initial_constants )
             continue
-            
+
         if Reasoning=='cautious':
             for m in minima:
                 constants = dict(initial_constants)
@@ -534,19 +534,19 @@ def compute_structure( Primes, Report, Verbose, Reasoning ):
                 if constants in DONE:
                     continue
                 DONE.append( constants )
-                
+
                 newprimes, newconstants = compute_percolation( Primes=initial_primes, Constants=constants, Verbose=-9 )
 
                 if not newprimes:
                     if not newconstants in MAXIMA:
                         MAXIMA.append( newconstants )
                     continue
-               
+
                 STACK.append( (newprimes, newconstants) )
 
 
         else: # Reasoning=='brave'
-            
+
 
             if len(minima)>1:
                 seeds  = compute_cliques( minima )
@@ -569,7 +569,7 @@ def compute_structure( Primes, Report, Verbose, Reasoning ):
                     continue
 
                 STACK.append( (newprimes, newconstants) )
-            
+
 
 
     print 'total:        ',len(MAXIMA)
@@ -584,17 +584,3 @@ def compute_structure( Primes, Report, Verbose, Reasoning ):
     seconds = seconds % 60
     time_delta = '%id %ih %im %is'%(days,hours,minutes,seconds)
     print 'Runtime:      ',time_delta
-
-    
-
-
-
-
-
-
-
-
-
-
-
-        
