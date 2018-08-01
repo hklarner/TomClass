@@ -2,7 +2,7 @@
 import subprocess
 
 TEMP_FNAME = 'temp.smv'
-NUSMV_CMD = '/home/klarner/Tools/NuSMV-2.5.4/bin/NuSMV'
+NUSMV_CMD = '/home/hannes/github/NuSMV-a/NuSMV-2.6.0/NuSMV/build/bin/NuSMV_linux64'
 
 
 class Interface(object):
@@ -10,7 +10,7 @@ class Interface(object):
 
         if not NuSMV_works(NUSMV_CMD, TEMP_FNAME):
             return
-            
+
         if VerificationType.lower()=='forsome':
             self.verification_str = 'is false'
             Formula = '!('+Formula+')'
@@ -21,7 +21,7 @@ class Interface(object):
 
         items = Fix.items()
         Fix = dict([(comp,v) for n,v in items for comp in Model.components if comp.name==n])
-        
+
         self.smv_str = Async_SMV(Model, self.Language, Formula, VerificationType, InitialStates, Fix)
 
         f=open(TEMP_FNAME, 'w')
@@ -29,13 +29,13 @@ class Interface(object):
         f.close()
 
     def check(self, Param):
-        
+
         f=open(TEMP_FNAME, 'w')
         f.write(self.smv_str.format(Param))
         f.close()
 
         out = subprocess.Popen([NUSMV_CMD, TEMP_FNAME], stderr=subprocess.STDOUT, stdout=subprocess.PIPE).communicate()[0]
-        
+
         if self.verification_str in out:
             return 1
         return 0
@@ -75,7 +75,7 @@ def Async_SMV(Model, Language, Formula, VerificationType, InitialStates='', Fix=
 
     s += '\nASSIGN\n'
     dynamic = [comp for comp in Model.components if not comp in Fix]
-    
+
     for i,comp in enumerate(dynamic):
         previous = []
         if i>0:
@@ -83,7 +83,7 @@ def Async_SMV(Model, Language, Formula, VerificationType, InitialStates='', Fix=
         after = []
         if i<len(dynamic):
             after = dynamic[i+1:]
-        
+
         s += '\tnext(%s) :=\n'%comp
         s += '\t\tcase\n'
         s += '\t\t\tdelta%s=0: %s;\n'%(comp,comp)
@@ -93,7 +93,7 @@ def Async_SMV(Model, Language, Formula, VerificationType, InitialStates='', Fix=
             s += '\t\t\t'+'|'.join(['delta%s!=0'%a for a in after])+': {{%s, %s+delta%s}};\n'%(comp,comp,comp)
         s += '\t\t\tTRUE: %s+delta%s;\n'%(comp,comp)
         s += '\t\tesac;\n'
-            
+
 
     if InitialStates:
         s += '\nINIT '+InitialStates+'\n'
@@ -122,7 +122,3 @@ def NuSMV_works(NusmvPath, Fname):
         print '\n\t>'.join(out.split('\n'))
         return False
     return True
-
-
-
-

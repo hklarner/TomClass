@@ -1,8 +1,0 @@
-TomClass
-========
-
-A python environment for classifying discrete regulatory models.
-
-Requires GUROBI for constraint satisfaction.
-
-Project is depreceated and succeeded by PyBoolNet.

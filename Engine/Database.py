@@ -14,7 +14,7 @@ def New(Name, Model):
 
     con = sqlite3.connect(Name)
     cur = con.cursor()
-    
+
     header = ', '.join(['%s INT'%p for p in Model.parameters])
     unique = ', '.join([str(p) for p in Model.parameters])
 
@@ -23,7 +23,7 @@ def New(Name, Model):
 
     sql = 'CREATE TABLE Regulations( Regulator TEXT, Target TEXT, Thresholds TEXT )'
     cur.execute(sql)
-    
+
     sql = 'INSERT INTO Regulations (Regulator, Target, Thresholds) VALUES (?,?,?)'
     stack = []
     for comp in Model.components:
@@ -33,7 +33,7 @@ def New(Name, Model):
 
     sql = 'CREATE TABLE Components (Name TEXT, MaxActivity INT)'
     cur.execute(sql)
-    
+
     sql = 'INSERT INTO Components (Name, MaxActivity) VALUES (?,?)'
     stack = []
     for comp in Model.components:
@@ -46,7 +46,7 @@ def New(Name, Model):
     con.commit()
     con.close()
 
-    
+
 
 class Interface(object):
     def __init__(self, Name):
@@ -68,18 +68,18 @@ class Interface(object):
         parameter_names = set([p.name for p in self.model.parameters])
         property_names  = set([row['Name'] for row in self.cur.execute('SELECT Name FROM Annotations')])
 
-        
+
         if column_names != set([]).union( parameter_names, property_names) :
             print ' **critical database error: columns in table parametrizations is not the union of parameter names and annotations:'
             print ' column_names:   ',     column_names
             print ' parameter_names:',  parameter_names
             print ' property_names: ',   property_names
             raise Exception
-        
+
         self.parameter_names    = parameter_names
         self.column_names       = column_names
         self.property_names     = property_names
-        
+
         sql = 'SELECT count(rowid) FROM Parametrizations'
         self.cur.execute(sql)
         row = self.cur.fetchone()
@@ -111,7 +111,7 @@ class Interface(object):
     def reset_column(self, Name):
         sql = 'UPDATE Parametrizations SET %s=NULL'%Name
         self.cur.execute(sql)
-        sql = 'UPDATE Annotations SET Description=NULL WHERE Name="%s"'%Name 
+        sql = 'UPDATE Annotations SET Description=NULL WHERE Name="%s"'%Name
         self.cur.execute(sql)
         self.con.commit()
 
@@ -120,22 +120,20 @@ class Interface(object):
 
     def info(self):
         pass
-        
-        
 
     def insert_row(self, Parameters, Labels={}):
         Id = tuple(sorted(Labels.items()))
-        
+
         if not self.insert_stacks.has_key(Id):
             self.insert_stacks[Id]=[Parameters]
         else:
             self.insert_stacks[Id].append( Parameters )
-            
+
             if len(self.insert_stacks[Id])>EXMANY_LIMIT:
                 self._commit_inserts()
 
     def _commit_inserts(self):
-                
+
         for Id in self.insert_stacks:
             p = [str(p) for p in self.model.parameters]
             properties = [prop for prop,label in Id]
@@ -147,7 +145,7 @@ class Interface(object):
             values = []
             for P in self.insert_stacks[Id]:
                 values.append([str(P[p]) for p in self.model.parameters]+labels)
-            
+
             self.cur.executemany(sql, values)
             self.con.commit()
 
@@ -157,7 +155,7 @@ class Interface(object):
         sql = 'SELECT Rowid,* FROM Parametrizations WHERE '+SQLSelection+' LIMIT 1'
         self.cur.execute(sql)
         row = self.cur.fetchone()
-        
+
         if row:
             params = {}
             for p in self.model.parameters:
@@ -169,7 +167,6 @@ class Interface(object):
             return params, labels, row['rowid']
         return None,None,None
 
-
     def set_labels(self, SQLSelection, Values):
         setter      = ','.join([ '%s=%s'%item for item in sorted(Values.items())])
         sql = 'UPDATE Parametrizations SET %s WHERE %s'%(setter, SQLSelection)
@@ -178,8 +175,7 @@ class Interface(object):
 
     def _commit_updates(self):
         pass
-        
-    
+
     def count(self, SQL):
         if not SQL: return self.size
 
@@ -193,9 +189,9 @@ class Interface(object):
         for p in Properties:
             if p in self.property_names:
                 sql = 'SELECT DISTINCT '+p+' FROM Parametrizations'
-                if Selection:
+                if SQLSelection:
                     sql+= ' WHERE '+SQLSelection
-                    
+
                 self.cur.execute(sql)
                 labels[p] = []
                 for row in self.cur:
@@ -208,14 +204,3 @@ class Interface(object):
         self._commit_inserts()
         self._commit_updates()
         self.con.close()
-
-
-
-    
-
-
-
-
-
-
-

@@ -13,30 +13,28 @@ import time
 
 
 
-UPDATE = 'asynchronous'
 
 DBNAME = 'example1.sqlite'
 FNAMECSV = 'example1.csv'
 
-create                  = 1
+create                  = 0
 
 annotate_compatible     = 0
-annotate_upfunctions    = 0
 annotate_attractors     = 0
 
 
 
-analyse_classes         = 0
-export_csv              = 0
-analyse_relationships   = 0
-analyse_strictestlabel  = 0
+analyse_classes         = 1
+export_csv              = 1
+analyse_relationships   = 1
+analyse_strictestlabel  = 1
 
 RESTRICTION             = ''
 CLASSES                 = []
 RELATIONSHIPS1          = []
 RELATIONSHIPS2          = []
 
-    
+
 
 def run():
     if create:
@@ -62,9 +60,9 @@ def run():
                     'Some(v1>=0,v3,=,2)',
                     'Some(v1>=0,v3,=,3)',
                     ]
-        
+
         parameters['Constraint'] = ' and '.join( clauses )
-                      
+
         Instantiation.CPEnumeration.run( parameters )
 
     if not create:
@@ -72,38 +70,32 @@ def run():
         model = db.get_model()
         model.info()
         db.close()
-        
+
     if annotate_compatible:
-        
-        print "revise annotate_compatible"
-        return
-        
         parameters = {  'Db_name'           : DBNAME,
                         'Restriction'       : RESTRICTION,
-                        'PropertyName'      : propname,
-                        'UpdateStrategy'    : UPDATE,
-                        'TemporalLogic'     : 'CTL',
-                        'Description'       : propname,
-                        'Formula'           : spec,
-                        'InitialStates'     : init,
-                        'VerificationType'  : 'forsome',
+                        'Property_name'     : "ALL_ACTIVE",
+                        'Description'       : "Exists a path a state 111",
+                        'Formula'           : "EF(v1 & v2 & v3)",
+                        'Initial_states'    : "TRUE",
+                        'Verification_type' : 'forsome',
                         'Fix'               : {}}
 
-        
-
-        Annotation.TemporalLogic.run( parameters )
 
 
-    
+        Annotation.CTL.run( parameters )
 
-        
+
+
+
+
     if analyse_classes:
         parameters = { 'Db_name'        : DBNAME,
                        'Properties'     : CLASSES,
                        'Restriction'    : RESTRICTION}
         if export_csv:
             parameters['FileName'] = FNAMECSV
-            
+
         Analysis.Classes.run( parameters )
 
     if analyse_relationships:
@@ -120,12 +112,6 @@ def run():
 
         Analysis.StrictestEdgeLabels.run( parameters )
 
-    if annotate_upfunctions:
-        params = {'Db_name'       : DBNAME,
-                  'Restriction'   : RESTRICTION,
-                  'Components'    : [],
-                  'ShowEquations' : True}
-        Annotation.UpdateFunctions.run( params )
 
     if annotate_attractors:
         params = {  'Db_name'        : DBNAME,
@@ -133,11 +119,11 @@ def run():
                     'PropertyName'   : 'Attractors',
                     'InitialStates'  : '',
                     }
-        
+
         Annotation.Attractors.run( params )
 
-    
-    
+
+
 
 if __name__=='__main__':
     run()

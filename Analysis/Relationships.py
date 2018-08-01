@@ -29,7 +29,7 @@ def run( Parameters ):
     print ' -finds relationships between two given sets of properties'
     print
 
-    db = Database.Analysis(Db_name)
+    db = Database.Interface(Db_name)
     if not db.property_names:
         print "No properties in DB '"+Db_name+"'", "please add annotations."
         db.close()
@@ -49,13 +49,13 @@ def run( Parameters ):
         Properties1 = set(list(db.property_names))
     if not Properties2:
         Properties2 = set(list(db.property_names))
-        
 
 
 
-    db.select(Restriction)
-    selected = db.count()
-    
+
+    #db.select(Restriction)
+    selected = db.count(Restriction)
+
     print 'Database name:       ',"'"+Db_name+"'"
     print 'Restriction:         ', "'"+Restriction+"'"
     print 'Models in database:  ', db.size
@@ -71,7 +71,8 @@ def run( Parameters ):
         count = db.count(sql)
         print '%s %i (%2.1f%%)'%((' '+p+':').ljust(19),count,100.*count/selected)
 
-    labels = db.labels(Properties1.union(Properties2), Selection=True)
+	labels = db.get_property_labels(Properties1.union(Properties2), SQLSelection=sql)
+    #labels = db.labels(Properties1.union(Properties2), Selection=True)
 
     hypotheses = []
     for p,v in labels.items():
@@ -106,7 +107,7 @@ def run( Parameters ):
         implications.remove( (a,b) )
         implications.remove( (b,a) )
 
-    
+
     if hypotheses:
         print
         print 'Hypotheses:'
@@ -146,9 +147,9 @@ def run( Parameters ):
             indeps.remove((b,a))
         else:
             print '  ',a,'is independent of',b
-        
-    
-    
+
+
+
     return
 
 
