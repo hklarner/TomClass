@@ -17,10 +17,10 @@ import time
 DBNAME = 'example1.sqlite'
 FNAMECSV = 'example1.csv'
 
-create                  = 0
+create                  = 1
 
-annotate_compatible     = 0
-annotate_attractors     = 0
+annotate_compatible     = 1
+
 
 
 
@@ -111,16 +111,6 @@ def run():
                       'Restriction'   : RESTRICTION}
 
         Analysis.StrictestEdgeLabels.run( parameters )
-
-
-    if annotate_attractors:
-        params = {  'Db_name'        : DBNAME,
-                    'Restriction'    : RESTRICTION,
-                    'PropertyName'   : 'Attractors',
-                    'InitialStates'  : '',
-                    }
-
-        Annotation.Attractors.run( params )
 
 
 
